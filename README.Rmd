@@ -201,6 +201,7 @@ the works.
 * Version 0.8.1: More fluorophores, rearranging detectors if needed
 * Version 0.8.2: Support for Mosaic and Xenith cytometers
 * Version 0.8.3: Patch for error introduced in 0.8.2
+* Version 0.8.4: Changes to error messaging in check.control.file
 
 
 

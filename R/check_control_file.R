@@ -295,10 +295,16 @@ check.control.file <- function( control.dir, control.def.file, asp,
 
     if ( any( !neg.name.match ) ) {
       non.matching.neg.names <- univ.neg[ !neg.name.match ]
-      warning( "Universal negative samples should have either `AF` or `Negative` as the fluorophore." )
-      message( paste( "\033[31mUniversal negative samples should be either `AF` or `Negative`.",
-                      "These samples are listed as universal negatives but have a",
-                      "different fluorophore indicated:\033[0m", sep = "\n" ) )
+      warning( "Universal negative samples should have either `AF` or `Negative` as the fluorophore.
+               Use `AF` for the unstained cell control and `Negative` for unstained beads. If you have
+               multiple unstained samples, use `AF` for the first (or most releveant) cell-based unstained,
+               then `Negative`, `Negative1`, `Negative2`, etc." )
+      message( paste( "\033[31mUniversal negative samples should have either `AF` or `Negativeas the fluorophore.",
+               "Use `AF` for the unstained cell control and `Negative` for unstained beads.",
+               "If you have multiple unstained samples, use `AF` for the first (or most releveant)
+               cell-based unstained, then `Negative`, `Negative1`, `Negative2`, etc.",
+               "These samples are listed as universal negatives but have a different fluorophore indicated:\033[0m",
+               sep = "\n" ) )
       message( paste( non.matching.neg.names, collapse = "\n" ) )
       errors$non.matching.neg.names <- non.matching.neg.names
     }

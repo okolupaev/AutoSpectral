@@ -36,6 +36,38 @@ At the moment, the following cytometers are supported:
 - Beckman Coulter CytoFLEX mosaic (“mosaic”)
 - ThermoFisher Attune Xenith (“xenith”)
 
+## Installation
+
+[![Stable](https://img.shields.io/badge/stable-master-blue)](https://github.com/DrCytometer/AutoSpectral)
+[![Dev](https://img.shields.io/badge/dev-branch-orange)](https://github.com/DrCytometer/AutoSpectral/tree/dev)
+
+### Stable Release
+
+**Version 0.8.5**
+
+Install using `devtools` or `remotes`. You will need to install the
+Bioconductor packages separately, I believe.
+
+``` r
+# Install Bioconductor packages
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC"))
+
+# You'll need devtools or remotes to install from GitHub.
+# install.packages("devtools")
+devtools::install_github("DrCytometer/AutoSpectral")
+```
+
+### Dev branch
+
+You can install the development version of AutoSpectral from
+[GitHub](https://github.com/) with:
+
+``` r
+devtools::install_github("DrCytometer/AutoSpectral@dev")
+```
+
 ## Bug fixes and known issues
 
 AutoSpectral is pretty complex and newly released, so there will be
@@ -43,9 +75,9 @@ bugs. Sorry. Thanks to all of you providing feedback.
 
 Since one of my recent updates broke things, I’ll be moving to using
 tagged releases that should be easier to install if the latest version
-has flaws. I’ll also try to set up a separate development branch. Things
-probably should have been that way from the start, but this is all new
-to me.
+has flaws. I’ve also set up a separate development branch, which will
+get the updates first. Things probably should have been that way from
+the start, but this is all new to me.
 
 Please check the [help pages and
 articles](https://drcytometer.github.io/AutoSpectral/) before submitting
@@ -78,23 +110,6 @@ grant agreement No 874707 (EXIMIOUS), Wellcome Investigator Award,
 (IMMPROVE).
 
 AutoSpectral is provided under an AGPL3 licence.
-
-## Installation
-
-You can install the development version of AutoSpectral from
-[GitHub](https://github.com/) with:
-
-``` r
-
-# Optional: Install Bioconductor packages
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC", "Biobase"))
-
-# You'll need devtools or remotes to install from GitHub.
-# install.packages("devtools")
-devtools::install_github("DrCytometer/AutoSpectral")
-```
 
 ## Example
 
@@ -192,7 +207,7 @@ faster.
 
 [AutoSpectralRcpp](https://github.com/DrCytometer/AutoSpectralRcpp)
 
-You can install the development version of AutoSpectralRcpp like so:
+You can install AutoSpectralRcpp like so:
 
 ``` r
 devtools::install_github("DrCytometer/AutoSpectralRcpp")
@@ -203,14 +218,12 @@ is not fully optimized in AutoSpectral. The parallel processing in
 AutoSpectralRcpp operates via OpenMP and works well. It is always
 activated, but the number of threads can be configured.
 
-To activate parallel processing, either set the `parallel` flag to
-`TRUE` in `asp` or check the function arguments for a `parallel` option.
-Additionally, there is control over the number of threads used, either
-directly in the function call or via `asp$max.worker.process.n`. Sorry,
-this will be cleaned up soon.
+To activate parallel processing, check the function arguments for a
+`parallel` option and set it to `TRUE`. Additionally, there is control
+over the number of threads used, either directly in the function call or
+via `asp$max.worker.process.n`.
 
 ``` r
-asp$parallel <- TRUE
 asp$max.worker.process.n
 ```
 

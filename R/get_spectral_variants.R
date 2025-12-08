@@ -159,10 +159,13 @@ get.spectral.variants <- function( control.dir, control.def.file,
   # get thresholds for positivity
   if ( verbose ) message( paste( "\033[33m", "Calculating positivity thresholds", "\033[0m" ) )
   unstained <- suppressWarnings(
-    flowCore::read.FCS( file.path( control.dir, flow.file.name[ "AF" ] ),
-                        transformation = NULL,
-                        truncate_max_range = FALSE,
-                        emptyValue = FALSE ) )
+    flowCore::read.FCS(
+      file.path( control.dir, flow.file.name[ "AF" ] ),
+      transformation = NULL,
+      truncate_max_range = FALSE,
+      emptyValue = FALSE
+    )
+  )
 
   # read exprs for spectral channels only
   if ( nrow( unstained ) > asp$gate.downsample.n.cells ) {
@@ -175,9 +178,16 @@ get.spectral.variants <- function( control.dir, control.def.file,
 
   raw.thresholds <- apply( unstained, 2, function( col ) quantile( col, 0.995 ) )
 
-  unstained.unmixed <- unmix.autospectral( unstained, spectra, af.spectra, verbose = FALSE )
-  unmixed.thresholds <- apply( unstained.unmixed[ , fluorophores ], 2, function( col )
-    quantile( col, 0.995 ) )
+  unstained.unmixed <- unmix.autospectral(
+    unstained,
+    spectra,
+    af.spectra,
+    verbose = FALSE
+    )
+  unmixed.thresholds <- apply(
+    unstained.unmixed[ , fluorophores ], 2, function( col )
+    quantile( col, 0.995 )
+    )
 
   if ( is.null( names( table.fluors ) ) ) names( table.fluors ) <- table.fluors
 

@@ -68,10 +68,13 @@ get.fluor.variants <- function( fluor,
     message( paste( "\033[34m", "Getting spectral variants for", fluor, "\033[0m" ) )
 
   pos.data <- suppressWarnings(
-    flowCore::read.FCS( file.path( control.dir, file.name[ fluor ] ),
-                        transformation = NULL,
-                        truncate_max_range = FALSE,
-                        emptyValue = FALSE ) )
+    flowCore::read.FCS(
+      file.path( control.dir, file.name[ fluor ] ),
+      transformation = NULL,
+      truncate_max_range = FALSE,
+      emptyValue = FALSE
+      )
+    )
 
   # read exprs for spectral channels only
   pos.data <- flowCore::exprs( pos.data )[ , spectral.channel ]
@@ -84,8 +87,9 @@ get.fluor.variants <- function( fluor,
   neg.idx <- setdiff( seq_len( nrow( pos.data ) ), raw.idx )
 
   if ( length( raw.idx ) > n.cells * 2 ) {
-    sorted.idx <- order( pos.data[ raw.idx, peak.channel ],
-                         decreasing = TRUE )[ 1:( n.cells * 2 ) ]
+    sorted.idx <- order(
+      pos.data[ raw.idx, peak.channel ],
+      decreasing = TRUE )[ 1:( n.cells * 2 ) ]
     raw.idx <- raw.idx[ sorted.idx ]
   }
 
@@ -123,7 +127,11 @@ get.fluor.variants <- function( fluor,
       unmixed.af <- unmix.ols( pos.data[ raw.idx, ], combined.spectra )
 
       # residual error
-      error.af <- rowSums( abs( pos.data[ raw.idx, ] - ( unmixed.af %*% combined.spectra ) ) )
+      error.af <- rowSums(
+        abs(
+          pos.data[ raw.idx, ] - ( unmixed.af %*% combined.spectra )
+          )
+        )
       improved <- which( error.af < error )
 
       error[ improved ] <- error.af[ improved ]
@@ -152,8 +160,11 @@ get.fluor.variants <- function( fluor,
     map <- EmbedSOM::SOM( som.input, xdim = som.dim, ydim = som.dim )
 
     # get spectra
-    variant.spectra <- t( apply( map$codes[ , spectral.channel ], 1,
-                                 function( x ) x / max( x ) ) )
+    variant.spectra <- t(
+      apply(
+        map$codes[ , spectral.channel ], 1, function( x ) x / max( x )
+        )
+      )
     variant.spectra <- as.matrix( na.omit( variant.spectra ) )
     rownames( variant.spectra ) <- paste0( fluor, "_", 1:nrow( variant.spectra ) )
 
@@ -162,10 +173,13 @@ get.fluor.variants <- function( fluor,
     # check for universal negative, if none, use internal negative
     if ( universal.negative[ fluor ] != FALSE ) {
       neg.data <- suppressWarnings(
-        flowCore::read.FCS( file.path( control.dir, universal.negative[ fluor ] ),
-                  transformation = NULL,
-                  truncate_max_range = FALSE,
-                  emptyValue = FALSE ) )
+        flowCore::read.FCS(
+          file.path( control.dir, universal.negative[ fluor ] ),
+          transformation = NULL,
+          truncate_max_range = FALSE,
+          emptyValue = FALSE
+          )
+        )
       neg.data <- flowCore::exprs( neg.data )[ , spectral.channel ]
 
       # get background on up to 10k events
@@ -195,7 +209,9 @@ get.fluor.variants <- function( fluor,
         return( spectra[ fluor, , drop = FALSE ] )
       } else {
         # low event sample--take lower half of distribution
-        idx.low <- order( pos.data[ , peak.channel ], decreasing = FALSE )[ 1:( nrow( pos.data ) / 2 ) ]
+        idx.low <- order(
+          pos.data[ , peak.channel ], decreasing = FALSE
+          )[ 1:( nrow( pos.data ) / 2 ) ]
         neg.selected <- pos.data[ idx.low, spectral.channel, drop = FALSE ]
         background <- apply( neg.selected, 2, median )
       }
@@ -207,11 +223,21 @@ get.fluor.variants <- function( fluor,
     # cluster
     som.input <- cbind( pos.unmixed, pos.data[ raw.idx, ] )
     set.seed( asp$variant.seed )
-    map <- EmbedSOM::SOM( som.input, xdim = som.dim, ydim = som.dim )
+    map <- EmbedSOM::SOM(
+      som.input,
+      xdim = som.dim,
+      ydim = som.dim
+      )
 
     # get spectra, subtracting background from unstained/negative
-    variant.spectra <- sweep( map$codes[ , spectral.channel ], 2, background, FUN = "-" )
-    variant.spectra <- t( apply( variant.spectra, 1, function( x ) x / max( x ) ) )
+    variant.spectra <- sweep(
+      map$codes[ , spectral.channel ], 2, background, FUN = "-"
+      )
+    variant.spectra <- t(
+      apply(
+        variant.spectra, 1, function( x ) x / max( x )
+        )
+      )
     variant.spectra <- as.matrix( na.omit( variant.spectra ) )
     rownames( variant.spectra ) <- paste0( fluor, "_", 1:nrow( variant.spectra ) )
   }
@@ -234,18 +260,23 @@ get.fluor.variants <- function( fluor,
   peak.idx <- original.spectrum > 0.05
 
   # smooth variation towards original outside original spectrum peaks
-  variant.spectra.denoised <- t( apply( variant.spectra, 1, function( x ) {
+  variant.spectra.denoised <- t(
+    apply( variant.spectra, 1, function( x ) {
     y <- x
     # shrink only off-peak channels
     y[ !peak.idx ] <- 0.5 * x[ !peak.idx ] + 0.5 * original.spectrum[ !peak.idx ]
     y
-  } ) )
+  } )
+  )
 
   if ( figures )
-    spectral.variant.plot( variant.spectra.denoised, original.spectrum,
-                           title = paste0( fluor, "_variants" ),
-                           save = TRUE,
-                           plot.dir = output.dir )
+    spectral.variant.plot(
+      variant.spectra.denoised,
+      original.spectrum,
+      title = paste0( fluor, "_variants" ),
+      save = TRUE,
+      plot.dir = output.dir
+      )
 
   return( variant.spectra.denoised )
 }

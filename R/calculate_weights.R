@@ -37,8 +37,10 @@ calculate.weights <- function( fcs.file, spectral.channels,
   # import fcs, without warnings for fcs 3.2
   spectral.exprs <- suppressWarnings(
     flowCore::exprs(
-      flowCore::read.FCS( fcs.file, transformation = FALSE,
-                          truncate_max_range = FALSE, emptyValue = FALSE )
+      flowCore::read.FCS(
+        fcs.file, transformation = FALSE,
+        truncate_max_range = FALSE, emptyValue = FALSE
+        )
     )[ , spectral.channels ]
   )
 

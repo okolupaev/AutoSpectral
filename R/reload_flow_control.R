@@ -24,8 +24,11 @@
 reload.flow.control <- function( control.dir, control.def.file, asp ) {
 
   # read channels from controls
-  control.table <- read.csv( control.def.file, na.strings = "",
-                             stringsAsFactors = FALSE )
+  control.table <- read.csv(
+    control.def.file, na.strings = "",
+    stringsAsFactors = FALSE
+  )
+
   control.table <- dplyr::filter( control.table, filename != "" )
 
   if ( anyDuplicated( control.table$filename ) != 0 )
@@ -45,12 +48,13 @@ reload.flow.control <- function( control.dir, control.def.file, asp ) {
   # remove unnecessary channels
   non.spectral.channel <- asp$non.spectral.channel
   non.spectral.channel <- paste0( non.spectral.channel, collapse = "|" )
-  flow.spectral.channel <- flow.set.channel[ !grepl( non.spectral.channel,
-                                                 flow.set.channel ) ]
+  flow.spectral.channel <- flow.set.channel[
+    !grepl( non.spectral.channel, flow.set.channel ) ]
 
-  if ( grepl( "Discover", asp$cytometer ) )
-    flow.spectral.channel <- flow.spectral.channel[ grep( asp$spectral.channel,
-                                                          flow.spectral.channel ) ]
+  if ( grepl( "Discover", asp$cytometer ) ) {
+    flow.spectral.channel <- flow.spectral.channel[
+      grep( asp$spectral.channel, flow.spectral.channel ) ]
+  }
 
   # reorganize channels if necessary
   flow.spectral.channel <- check.channels( flow.spectral.channel, asp )
@@ -70,16 +74,23 @@ reload.flow.control <- function( control.dir, control.def.file, asp ) {
   flow.scatter.parameter <- read.scatter.parameter( asp )
 
   # set labels for time, scatter parameters and channels
-  flow.scatter.and.channel <- c( asp$default.time.parameter,
-                                 flow.scatter.parameter, flow.channel )
-  flow.scatter.and.channel.spectral <- c( asp$default.time.parameter,
-                                          flow.scatter.parameter,
-                                          flow.spectral.channel )
+  flow.scatter.and.channel <- c(
+    asp$default.time.parameter, flow.scatter.parameter, flow.channel
+    )
+  flow.scatter.and.channel.spectral <- c(
+    asp$default.time.parameter,
+    flow.scatter.parameter,
+    flow.spectral.channel
+  )
 
-  flow.scatter.and.channel.label <- c( "Time", flow.scatter.parameter,
-                                       ifelse( ! is.na( flow.antigen ),
-                                               paste0( flow.antigen, " - ", flow.fluorophore ),
-                                               flow.channel ) )
+  flow.scatter.and.channel.label <- c(
+    "Time", flow.scatter.parameter,
+    ifelse(
+      ! is.na( flow.antigen ),
+      paste0( flow.antigen, " - ", flow.fluorophore ),
+      flow.channel
+    )
+  )
   names( flow.scatter.and.channel.label ) <- flow.scatter.and.channel
 
   # make control info

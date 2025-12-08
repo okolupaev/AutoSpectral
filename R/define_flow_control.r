@@ -101,12 +101,12 @@ define.flow.control <- function( control.dir,
   # remove unnecessary channels
   non.spectral.channel <- asp$non.spectral.channel
   non.spectral.channel <- paste0( non.spectral.channel, collapse = "|" )
-  flow.spectral.channel <- flow.set.channel[ !grepl( non.spectral.channel,
-                                                     flow.set.channel ) ]
+  flow.spectral.channel <- flow.set.channel[
+    !grepl( non.spectral.channel, flow.set.channel ) ]
 
   if ( grepl( "Discover", asp$cytometer ) )
-    flow.spectral.channel <- flow.spectral.channel[ grep( asp$spectral.channel,
-                                                          flow.spectral.channel ) ]
+    flow.spectral.channel <- flow.spectral.channel[
+      grep( asp$spectral.channel, flow.spectral.channel ) ]
 
   # reorganize channels if necessary
   flow.spectral.channel <- check.channels( flow.spectral.channel, asp )
@@ -198,6 +198,7 @@ define.flow.control <- function( control.dir,
   # set samples and gate combos
   flow.sample <- control.table$sample
   flow.sample.n <- length( flow.sample )
+
   if ( gate )
     names( flow.gate ) <- flow.sample
 
@@ -217,6 +218,7 @@ define.flow.control <- function( control.dir,
 
   flow.antigen[ flow.fluorophore == "AF" ] <- "AF"
   flow.antigen[ is.na( flow.antigen ) ] <- "other"
+
   # set default AF channel if none has been provided
   if ( any( flow.fluorophore == "AF" ) ) {
     idx <- which( flow.fluorophore == "AF" )
@@ -247,12 +249,14 @@ define.flow.control <- function( control.dir,
   flow.scatter.parameter <- read.scatter.parameter( asp )
 
   # set scatter parameters and channels
-  flow.scatter.and.channel <- c( asp$default.time.parameter,
-                                 flow.scatter.parameter, flow.channel )
+  flow.scatter.and.channel <- c(
+    asp$default.time.parameter,
+    flow.scatter.parameter, flow.channel )
 
-  flow.scatter.and.channel.spectral <- c( asp$default.time.parameter,
-                                          flow.scatter.parameter,
-                                          flow.spectral.channel )
+  flow.scatter.and.channel.spectral <- c(
+    asp$default.time.parameter,
+    flow.scatter.parameter,
+    flow.spectral.channel )
 
   flow.scatter.and.channel.matched.bool <-
     flow.scatter.and.channel.spectral %in% flow.set.channel
@@ -278,10 +282,11 @@ define.flow.control <- function( control.dir,
     stop( "internal error: names for channels overlap", call. = FALSE )
 
   # set labels for time, scatter parameters and channels
-  flow.scatter.and.channel.label <- c( "Time", flow.scatter.parameter,
-                                       ifelse( ! is.na( flow.antigen ),
-                                               paste0( flow.antigen, " - ", flow.fluorophore ),
-                                               flow.channel ) )
+  flow.scatter.and.channel.label <- c(
+    "Time", flow.scatter.parameter,
+    ifelse( ! is.na( flow.antigen ),
+            paste0( flow.antigen, " - ", flow.fluorophore ), flow.channel )
+    )
   names( flow.scatter.and.channel.label ) <- flow.scatter.and.channel
 
   # get range of fcs data
@@ -305,7 +310,8 @@ define.flow.control <- function( control.dir,
 
     for( gate in unique( control.table$gate ) ) {
 
-      files.to.gate <- unique( control.table[ control.table$gate == gate, ]$filename )
+      files.to.gate <- unique(
+        control.table[ control.table$gate == gate, ]$filename )
 
       files.n <- length( files.to.gate )
 
@@ -329,8 +335,14 @@ define.flow.control <- function( control.dir,
       control.type <- unique( control.table[ control.table$gate == gate, ]$control.type )
       samp <- paste( control.type, is.viability, is.large.gate, sep = "_" )
 
-      gate.boundary <- do.gate( scatter.coords, viability.gate, large.gate,
-                                samp, flow.scatter.and.channel.label, control.type, asp )
+      gate.boundary <- do.gate(
+        scatter.coords,
+        viability.gate,
+        large.gate,
+        samp,
+        flow.scatter.and.channel.label,
+        control.type,
+        asp )
 
       gate.list[[ gate ]] <- gate.boundary
 
@@ -431,13 +443,13 @@ define.flow.control <- function( control.dir,
   {
     flow.sample.event.number <- nrow( flow.expr.data[[ fs.idx ]]  )
 
-    rownames( flow.expr.data[[ fs.idx ]] ) <- paste( flow.sample[ fs.idx ],
-                                                     seq_len( flow.sample.event.number ), sep = "_")
+    rownames( flow.expr.data[[ fs.idx ]] ) <- paste(
+      flow.sample[ fs.idx ], seq_len( flow.sample.event.number ), sep = "_" )
 
     if ( flow.sample.event.number < 500 )
-      warning( paste( "\033[31m",  "Warning! Fewer than 500 gated events in",
-                      flow.file.name[ fs.idx ],
-                      "\033[0m", "\n" ) )
+      warning(
+        paste( "\033[31m",  "Warning! Fewer than 500 gated events in",
+               flow.file.name[ fs.idx ], "\033[0m", "\n" ) )
 
     if ( flow.sample.event.number > flow.sample.event.number.max )
       flow.sample.event.number.max <- flow.sample.event.number
@@ -454,8 +466,10 @@ define.flow.control <- function( control.dir,
 
     flow.the.sample <- flow.sample[ fs.idx ]
 
-    flow.the.event <- sprintf( "%s.%0*d", flow.the.sample,
-                               flow.event.number.width, 1 : flow.sample.event.number )
+    flow.the.event <- sprintf(
+      "%s.%0*d", flow.the.sample,
+      flow.event.number.width, 1 : flow.sample.event.number
+      )
     rownames( flow.expr.data[[ fs.idx ]] ) <- flow.the.event
   }
 
@@ -471,9 +485,10 @@ define.flow.control <- function( control.dir,
   flow.event.sample <- factor( flow.event.sample, levels = flow.sample )
   event.type.factor <- flow.sample
   names( event.type.factor ) <- flow.control.type
-  flow.event.type <- factor( flow.event.sample,
-                             levels = event.type.factor,
-                             labels = names( event.type.factor ) )
+  flow.event.type <- factor(
+    flow.event.sample,
+    levels = event.type.factor,
+    labels = names( event.type.factor ) )
 
   names( flow.control.type ) <- flow.fluorophore
 

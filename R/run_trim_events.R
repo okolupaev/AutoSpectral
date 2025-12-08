@@ -49,9 +49,14 @@ run.trim.events <- function( trim.sample.data, trim.sample,
 
   rm( trim.sample.data )
 
-  if ( any( trimmed.expr.n < asp$min.cell.stop.n ) )
-    warning( paste( "\033[31m", "Warning! Fewer than", asp$min.cell.stop.n,
-                "gated events in", names( low.sample.n ), "\033[0m", "\n"  ) )
+  if ( any( trimmed.expr.n < asp$min.cell.stop.n ) ) {
+    warning(
+      paste(
+        "\033[31m", "Warning! Fewer than", asp$min.cell.stop.n,
+        "gated events in", names( low.sample.n ), "\033[0m", "\n"
+      )
+    )
+  }
 
   return( trimmed.expr )
 }

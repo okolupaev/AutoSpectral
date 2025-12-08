@@ -52,13 +52,14 @@ do.peacoQC <- function( dirty.expr, sample.name, spectral.channel,
 
   dirty.ff <- PeacoQC::RemoveMargins( dirty.ff, spectral.channel )
 
-  peacoQC.result <- suppressWarnings( PeacoQC::PeacoQC(
-    ff = dirty.ff,
-    channels = spectral.channel,
-    determine_good_cells = method,
-    plot = FALSE, save_fcs = FALSE,
-    output_directory = output.dir,
-    report = FALSE, time_channel_parameter = time.param
+  peacoQC.result <- suppressWarnings(
+    PeacoQC::PeacoQC(
+      ff = dirty.ff,
+      channels = spectral.channel,
+      determine_good_cells = method,
+      plot = FALSE, save_fcs = FALSE,
+      output_directory = output.dir,
+      report = FALSE, time_channel_parameter = time.param
     ) )
 
   if ( figures )
@@ -69,7 +70,8 @@ do.peacoQC <- function( dirty.expr, sample.name, spectral.channel,
 
   transform.list <- flowCore::transformList( spectral.channel, transform.inv )
 
-  peacoQC.result$FinalFF <- flowCore::transform( peacoQC.result$FinalFF, transform.list )
+  peacoQC.result$FinalFF <- flowCore::transform(
+    peacoQC.result$FinalFF, transform.list )
 
   clean.expr <- flowCore::exprs( peacoQC.result$FinalFF )[ , all.channels ]
 

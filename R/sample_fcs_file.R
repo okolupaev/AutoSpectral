@@ -21,11 +21,13 @@
 sample.fcs.file <- function( file.name, control.dir, downsample.n, asp ) {
 
   ff <- suppressWarnings(
-    read.FCS( file.path( control.dir, file.name ),
-              transformation = FALSE,
-              truncate_max_range = FALSE,
-              emptyValue = FALSE )
+    flowCore::read.FCS(
+      file.path( control.dir, file.name ),
+      transformation = FALSE,
+      truncate_max_range = FALSE,
+      emptyValue = FALSE
     )
+  )
 
   ff <- flowCore::exprs( ff )[ , asp$default.scatter.parameter ]
 

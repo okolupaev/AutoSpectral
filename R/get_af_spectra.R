@@ -58,8 +58,11 @@ get.af.spectra <- function( unstained.sample,
 
   # import unstained sample
   unstained.ff <- suppressWarnings(
-    flowCore::read.FCS( unstained.sample, transformation = FALSE,
-                        truncate_max_range = FALSE, emptyValue = FALSE )
+    flowCore::read.FCS(
+      unstained.sample,
+      transformation = FALSE,
+      truncate_max_range = FALSE,
+      emptyValue = FALSE )
   )
 
   unstained.exprs <- flowCore::exprs( unstained.ff )[ , spectral.channels ]
@@ -73,10 +76,12 @@ get.af.spectra <- function( unstained.sample,
     message( "Creating a self-organizing map of the autofluorescence" )
 
   set.seed( 42 )
-  map <- EmbedSOM::SOM( cluster.data,
-                        xdim = som.dim, ydim = som.dim,
-                        batch = TRUE, parallel = TRUE,
-                        threads = threads )
+  map <- EmbedSOM::SOM(
+    cluster.data,
+    xdim = som.dim, ydim = som.dim,
+    batch = TRUE, parallel = TRUE,
+    threads = threads
+    )
 
   af.spectra <- t(
     apply( map$codes[ , spectral.channels ], 1, function( x ) {
@@ -108,11 +113,13 @@ get.af.spectra <- function( unstained.sample,
     if ( is.null( title ) )
       title <- asp$af.file.name
 
-    spectral.trace( spectral.matrix = af.spectra,
-                    asp = asp,
-                    title = title,
-                    plot.dir = plot.dir,
-                    split.lasers = FALSE )
+    spectral.trace(
+      spectral.matrix = af.spectra,
+      asp = asp,
+      title = title,
+      plot.dir = plot.dir,
+      split.lasers = FALSE
+      )
 
     spectral.heatmap( af.spectra, title, plot.dir )
   }

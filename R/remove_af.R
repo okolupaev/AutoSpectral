@@ -193,22 +193,25 @@ remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
     # plot stained control clean-up
     # handle cases of no removal
     if ( length( gate.population.idx ) == nrow( expr.data.pos ) ) {
-      removed.data <- matrix( 0,
-                             nrow = nrow( expr.data.pos ),
-                             ncol = ncol( expr.data.pos ),
-                             dimnames = dimnames( expr.data.pos ) )
+      removed.data <- matrix(
+        0,
+        nrow = nrow( expr.data.pos ),
+        ncol = ncol( expr.data.pos ),
+        dimnames = dimnames( expr.data.pos )
+        )
     } else {
-      removed.data <- expr.data.pos[ -gate.population.idx,
-                                     , drop = FALSE ]
+      removed.data <- expr.data.pos[ -gate.population.idx, , drop = FALSE ]
     }
 
-    spectral.ribbon.plot( pos.expr.data = expr.data.pos,
-                          neg.expr.data = expr.data.pos[ gate.population.idx, , drop = FALSE ],
-                          spectral.channel = spectral.channel,
-                          asp = asp, fluor.name = samp,
-                          title = asp$af.plot.filename,
-                          af = TRUE,
-                          removed.data = removed.data )
+    spectral.ribbon.plot(
+      pos.expr.data = expr.data.pos,
+      neg.expr.data = expr.data.pos[ gate.population.idx, , drop = FALSE ],
+      spectral.channel = spectral.channel,
+      asp = asp, fluor.name = samp,
+      title = asp$af.plot.filename,
+      af = TRUE,
+      removed.data = removed.data
+      )
 
     # plot AF removal gating on stained control
     gate.af.sample.plot( gate.data.pos, samp, af.boundary.ggp, asp )
@@ -219,23 +222,26 @@ remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
 
       # plot negative clean-up
       if ( length( gate.neg.idx ) == nrow( expr.data.neg ) ) {
-        removed.data <- matrix( 0,
-                                nrow = nrow( expr.data.neg ),
-                                ncol = ncol( expr.data.neg ),
-                                dimnames = dimnames( expr.data.neg ) )
+        removed.data <- matrix(
+          0,
+          nrow = nrow( expr.data.neg ),
+          ncol = ncol( expr.data.neg ),
+          dimnames = dimnames( expr.data.neg )
+          )
       } else {
-        removed.data <- expr.data.neg[ -gate.neg.idx,
-                                       , drop = FALSE ]
+        removed.data <- expr.data.neg[ -gate.neg.idx, , drop = FALSE ]
       }
 
-      spectral.ribbon.plot( pos.expr.data = expr.data.neg,
-                            neg.expr.data = expr.data.neg[ gate.neg.idx, , drop = FALSE ],
-                            spectral.channel = spectral.channel,
-                            asp = asp,
-                            fluor.name = negative.label,
-                            title = asp$af.plot.filename,
-                            af = TRUE,
-                            removed.data = removed.data )
+      spectral.ribbon.plot(
+        pos.expr.data = expr.data.neg,
+        neg.expr.data = expr.data.neg[ gate.neg.idx, , drop = FALSE ],
+        spectral.channel = spectral.channel,
+        asp = asp,
+        fluor.name = negative.label,
+        title = asp$af.plot.filename,
+        af = TRUE,
+        removed.data = removed.data
+        )
 
       # plot AF removal gating on negative control
       gate.af.sample.plot( gate.data.neg, negative.label, af.boundary.ggp, asp )
@@ -263,20 +269,25 @@ remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
 
     # warn if few events in positive
     if ( length( pos.above.threshold ) < asp$min.cell.warning.n )
-      warning( paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.warning.n,
-                      "positive events in", samp,  "\033[0m", "\n" )  )
+      warning(
+        paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.warning.n,
+               "positive events in", samp,  "\033[0m", "\n" )
+        )
 
     # stop if fewer than minimum acceptable events, returning original data
     if ( length( pos.above.threshold ) < asp$min.cell.stop.n ) {
-      warning( paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.stop.n,
-                      "positive events in", samp, "\n",
-                      "Returning original data", "\033[0m", "\n" )  )
+      warning(
+        paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.stop.n,
+               "positive events in", samp, "\n",
+               "Returning original data", "\033[0m", "\n" )
+        )
       return( clean.expr[[ samp ]][ gate.population.idx, ] )
     }
 
     # select only brightest positive.n events
     if ( length( pos.above.threshold ) >= positive.n )
-      pos.selected <- sort( pos.above.threshold, decreasing = TRUE )[ 1:positive.n ]
+      pos.selected <- sort(
+        pos.above.threshold, decreasing = TRUE )[ 1:positive.n ]
     else
       pos.selected <- pos.above.threshold
 
@@ -285,7 +296,8 @@ remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
     pos.scatter.coord <- unique( pos.selected.expr[ , scatter.param ] )
 
     pos.scatter.gate <- suppressWarnings(
-      tripack::convex.hull( tripack::tri.mesh(
+      tripack::convex.hull(
+        tripack::tri.mesh(
         pos.scatter.coord[ , 1 ],
         pos.scatter.coord[ , 2 ]
       ) ) )
@@ -304,9 +316,11 @@ remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
 
     # stop if fewer than minimum acceptable events, returning original negative
     if ( length( neg.population.idx ) < asp$min.cell.stop.n ) {
-      warning( paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.stop.n,
-                      "scatter-matched negative events for", samp, "\n",
-                      "Reverting to original negative. \n",  "\033[0m" ) )
+      warning(
+        paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.stop.n,
+               "scatter-matched negative events for", samp, "\n",
+               "Reverting to original negative. \n",  "\033[0m" )
+        )
 
       return( clean.expr[[ samp ]][ gate.population.idx, ] )
     }
@@ -317,18 +331,22 @@ remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
     neg.scatter.matched <- expr.data.neg[ neg.population.idx, ]
 
     if ( main.figures ) {
-      scatter.match.plot( pos.expr.data = pos.selected.expr,
-                          neg.expr.data = neg.scatter.matched,
-                          fluor.name = samp,
-                          scatter.param = scatter.param,
-                          asp = asp )
+      scatter.match.plot(
+        pos.expr.data = pos.selected.expr,
+        neg.expr.data = neg.scatter.matched,
+        fluor.name = samp,
+        scatter.param = scatter.param,
+        asp = asp
+        )
 
       if ( intermediate.figures )
-        spectral.ribbon.plot( pos.expr.data = pos.selected.expr,
-                              neg.expr.data = neg.scatter.matched,
-                              spectral.channel = spectral.channel,
-                              asp = asp,
-                              fluor.name = samp )
+        spectral.ribbon.plot(
+          pos.expr.data = pos.selected.expr,
+          neg.expr.data = neg.scatter.matched,
+          spectral.channel = spectral.channel,
+          asp = asp,
+          fluor.name = samp
+          )
 
     }
     return( rbind( pos.selected.expr, neg.scatter.matched ) )

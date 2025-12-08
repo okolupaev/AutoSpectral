@@ -65,11 +65,12 @@ unmix.poisson <- function( raw.data, spectra, asp, initial.weights = NULL,
       # fit glm model with Poisson distribution using identity link function
       fit <- tryCatch(
         suppressWarnings(
-          glm.fit( spectra.t, raw.data.cell,
-                   start = unmixed.data.cell,
-                   family = poisson( link = "identity" ),
-                   control = glm.control( maxit = asp$rlm.iter.max ),
-                   intercept = FALSE
+          glm.fit(
+            spectra.t, raw.data.cell,
+            start = unmixed.data.cell,
+            family = poisson( link = "identity" ),
+            control = glm.control( maxit = asp$rlm.iter.max ),
+            intercept = FALSE
           )
         )
       )

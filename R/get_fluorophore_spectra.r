@@ -34,13 +34,12 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
     title <- "Initial"
 
   # iterate only over non-negative samples
-  fluorophore.samples <- flow.control$fluorophore[ ! grepl( "negative",
-                                                          flow.control$fluorophore,
-                                                          ignore.case = TRUE ) ]
+  fluorophore.samples <- flow.control$fluorophore[
+    ! grepl( "negative", flow.control$fluorophore, ignore.case = TRUE ) ]
 
-  fluorophore.channels <- flow.control$channel[ ! grepl( "negative",
-                                                       flow.control$fluorophore,
-                                                       ignore.case = TRUE ) ]
+  fluorophore.channels <- flow.control$channel[
+    ! grepl( "negative", flow.control$fluorophore, ignore.case = TRUE ) ]
+
   # check for data
   if ( use.clean.expr ) {
     if ( is.null( flow.control$clean.expr ) )
@@ -54,12 +53,12 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
   # extract fluophore spectra using original "dirty" data
   if ( !use.clean.expr ) {
-    fluorophore.event.samples <- flow.control$event.sample[ flow.control$event.sample %in%
-                                                             fluorophore.samples ]
+    fluorophore.event.samples <- flow.control$event.sample[
+      flow.control$event.sample %in% fluorophore.samples ]
     fluorophore.event.samples <- droplevels( fluorophore.event.samples )
 
-    expr.data <- flow.control$expr.data[ flow.control$event.sample %in%
-                                           fluorophore.event.samples, ]
+    expr.data <- flow.control$expr.data[
+      flow.control$event.sample %in% fluorophore.event.samples, ]
 
     marker.spectra <- lapply( fluorophore.samples, function( samp ) {
 
@@ -78,8 +77,7 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
           fluor.spectra.coef[ channel ] <- 1.0
         } else {
           channel.expr <- expr.data[
-            which( fluorophore.event.samples == samp ),
-            channel ]
+            which( fluorophore.event.samples == samp ), channel ]
 
           # fit robust linear model
           spectra.model.result <- fit.robust.linear.model(
@@ -102,8 +100,8 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
   } else {
     # extract fluophore spectra using "cleaned" data
-    fluorophore.event.samples <- flow.control$clean.event.sample[ flow.control$clean.event.sample %in%
-                                                                   fluorophore.samples ]
+    fluorophore.event.samples <- flow.control$clean.event.sample[
+      flow.control$clean.event.sample %in% fluorophore.samples ]
     fluorophore.event.samples <- droplevels( fluorophore.event.samples )
 
     expr.data <- flow.control$clean.expr[ flow.control$clean.event.sample %in%
@@ -158,35 +156,43 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
     if ( !is.null( af.spectra ) )
       fluorophore.spectra.plot <- rbind( fluorophore.spectra.plot, af.spectra )
 
-    spectral.trace( spectral.matrix = fluorophore.spectra.plot,
-                    asp = asp,
-                    title = paste( title, asp$spectra.file.name, sep = "_" ),
-                    plot.dir = asp$figure.spectra.dir,
-                    split.lasers = TRUE,
-                    figure.spectra.line.size = asp$figure.spectra.line.size,
-                    figure.spectra.point.size = asp$figure.spectra.point.size )
+    spectral.trace(
+      spectral.matrix = fluorophore.spectra.plot,
+      asp = asp,
+      title = paste( title, asp$spectra.file.name, sep = "_" ),
+      plot.dir = asp$figure.spectra.dir,
+      split.lasers = TRUE,
+      figure.spectra.line.size = asp$figure.spectra.line.size,
+      figure.spectra.point.size = asp$figure.spectra.point.size
+      )
 
-    spectral.heatmap( fluorophore.spectra.plot,
-                      title = paste( title, asp$spectra.file.name, sep = "_" ),
-                      plot.dir = asp$figure.spectra.dir )
+    spectral.heatmap(
+      fluorophore.spectra.plot,
+      title = paste( title, asp$spectra.file.name, sep = "_" ),
+      plot.dir = asp$figure.spectra.dir
+      )
 
-    cosine.similarity.plot( fluorophore.spectra.plot,
-                            filename = asp$similarity.heatmap.file.name,
-                            title,
-                            output.dir = asp$figure.similarity.heatmap.dir,
-                            figure.width = asp$figure.similarity.width,
-                            figure.height = asp$figure.similarity.height )
+    cosine.similarity.plot(
+      fluorophore.spectra.plot,
+      filename = asp$similarity.heatmap.file.name,
+      title,
+      output.dir = asp$figure.similarity.heatmap.dir,
+      figure.width = asp$figure.similarity.width,
+      figure.height = asp$figure.similarity.height
+      )
 
     hotspot.matrix <- calculate.hotspot.matrix( marker.spectra )
 
-    create.heatmap( hotspot.matrix,
-                    title = paste( title, "Hotspot_Matrix", sep = "_" ),
-                    legend.label = expression( "Hotspot Matrix"^"TM" ),
-                    triangular = TRUE,
-                    plot.dir = asp$figure.similarity.heatmap.dir,
-                    color.palette = "inferno",
-                    figure.width = asp$figure.similarity.width,
-                    figure.height = asp$figure.similarity.height )
+    create.heatmap(
+      hotspot.matrix,
+      title = paste( title, "Hotspot_Matrix", sep = "_" ),
+      legend.label = expression( "Hotspot Matrix"^"TM" ),
+      triangular = TRUE,
+      plot.dir = asp$figure.similarity.heatmap.dir,
+      color.palette = "inferno",
+      figure.width = asp$figure.similarity.width,
+      figure.height = asp$figure.similarity.height
+      )
 
     # unmixing.matrix <- solve( crossprod( t( marker.spectra ) ) ) %*% marker.spectra
     unmixing.matrix <- solve( crossprod( t( marker.spectra ) ), marker.spectra )

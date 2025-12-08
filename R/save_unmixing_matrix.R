@@ -62,16 +62,20 @@ save.unmixing.matrix <- function( spectra,
 
     W <- diag( as.numeric( weights ) )
 
-    unmixing.matrix <- solve( t( spectra ) %*% W %*% spectra ) %*%
-      ( t( spectra ) %*% W )
+    unmixing.matrix <- solve(
+      t( spectra ) %*% W %*% spectra ) %*% ( t( spectra ) %*% W )
 
     message( "WLS unmixing matrix saved." )
   }
 
   if ( figures )
-    spectral.heatmap( unmixing.matrix, title = filename,
-                      plot.dir = output.dir,
-                      legend.label = "Coefficients", color.palette = color.palette )
+    spectral.heatmap(
+      unmixing.matrix,
+      title = filename,
+      plot.dir = output.dir,
+      legend.label = "Coefficients",
+      color.palette = color.palette
+    )
 
   write.csv( unmixing.matrix, file.path( output.dir, paste0( filename, ".csv" ) ) )
 }

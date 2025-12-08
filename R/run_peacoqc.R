@@ -103,10 +103,13 @@ run.peacoQC <- function( expr.data,
   low.sample.n <- which( clean.expr.n < asp$min.cell.warning.n )
 
   if ( any( clean.expr.n < asp$min.cell.warning.n ) ) {
-    warning( paste( "\033[31m", "Warning! Fewer than", asp$min.cell.warning.n,
-                "gated events in", names( low.sample.n ), "\033[0m", "\n"  ) )
+    warning(
+      paste(
+        "\033[31m", "Warning! Fewer than", asp$min.cell.warning.n,
+        "gated events in", names( low.sample.n ), "\033[0m", "\n"
+      )
+    )
   }
 
   return( clean.expr )
-
 }

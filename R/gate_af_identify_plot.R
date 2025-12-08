@@ -76,8 +76,9 @@ gate.af.identify.plot <- function( gate.data, samp, gate.region,
     geom_path( aes( .data$x, .data$y, color = NULL ),
                data = gate.region, linewidth = asp$figure.gate.line.size ) +
     theme_bw() +
-    theme( plot.margin = margin( asp$figure.margin, asp$figure.margin,
-                                 asp$figure.margin, asp$figure.margin ),
+    theme( plot.margin = margin(
+      asp$figure.margin, asp$figure.margin,
+      asp$figure.margin, asp$figure.margin ),
            legend.position = "none",
            axis.ticks = element_line( linewidth = asp$figure.panel.line.size ),
            axis.text = element_text( size = asp$figure.axis.text.size ),
@@ -95,13 +96,16 @@ gate.af.identify.plot <- function( gate.data, samp, gate.region,
       scale_fill_viridis_c( option = color.palette )
   } else {
     gate.plot <- gate.plot +
-      scale_fill_gradientn( colours = asp$density.palette.base.color,
-                            values = asp$ribbon.scale.values )
+      scale_fill_gradientn(
+        colours = asp$density.palette.base.color, values = asp$ribbon.scale.values )
   }
 
-  ggsave( file.path( asp$figure.clean.control.dir,
-                     paste( asp$af.plot.define.filename, samp, ".jpg", sep = "_" ) ),
-          plot = gate.plot, width = asp$figure.width,
-          height = asp$figure.height )
+  ggsave(
+    file.path(
+      asp$figure.clean.control.dir,
+      paste( asp$af.plot.define.filename, samp, ".jpg", sep = "_" ) ),
+    plot = gate.plot, width = asp$figure.width,
+    height = asp$figure.height
+    )
 
 }

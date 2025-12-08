@@ -414,9 +414,11 @@ clean.controls <- function( flow.control, asp,
 
   event.type.factor <- flow.sample
   names( event.type.factor ) <- flow.control$control.type
-  flow.event.type <- factor( flow.event.sample,
-                             levels = event.type.factor,
-                             labels = names( event.type.factor ) )
+  flow.event.type <- factor(
+    flow.event.sample,
+    levels = event.type.factor,
+    labels = names( event.type.factor )
+    )
 
   # store in flow.control
   flow.control$clean.expr <- clean.expr

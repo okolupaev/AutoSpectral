@@ -38,9 +38,15 @@
 #' @return A matrix containing the expression data with autofluorescent events
 #' removed for the sample.
 
-remove.af <- function( samp, clean.expr, spectral.channel, peak.channel,
-                       universal.negative, asp, scatter.param,
-                       negative.n = 500, positive.n = 1000,
+remove.af <- function( samp,
+                       clean.expr,
+                       spectral.channel,
+                       peak.channel,
+                       universal.negative,
+                       asp,
+                       scatter.param,
+                       negative.n = 500,
+                       positive.n = 1000,
                        scatter.match = TRUE,
                        main.figures = TRUE,
                        intermediate.figures = FALSE,

@@ -192,12 +192,14 @@ Runtime will vary considerably depending on the size and quantity of files you'r
 * `get.spectral.variants()` v.0.9.0: 65sec sequential, 32sec parallel
 
 Unmixing time depends on the following variable:
+
 * file size (number of cells/events, including debris)
 * number of detectors
 * number of fluorophores
 * unmixing algorithm. OLS and WLS are fast, per-cell AF extraction will be ~50x slower, per-cell fluorophore optimization will be 2-4x slower than per-cell AF when running the "fast" approximation using AutoSpectralRcpp, or about 20-50x slower when using the "slow" exact calculation, again using AutoSpectralRcpp. Using the "fast" approximation in pure R will likely be comparable to or slower than the "slow" method in C++.
 
 Benchmarks for "C3 Lung_GFP_003_Samples.fcs", again on the 8-core laptop, using OpenBLAS and AutoSpectralRcpp, where applicable:
+
 * `unmix.fcs()` WLS or OLS v0.8.7: 9sec
 * `unmix.fcs()` WLS or OLS v0.9.0: 9sec
 * `unmix.fcs()` perCell AF extraction v0.8.7: 2min

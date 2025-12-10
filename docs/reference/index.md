@@ -12,8 +12,6 @@
   : Check Channels
 - [`check.control.file()`](https://drcytometer.github.io/AutoSpectral/reference/check.control.file.md)
   : Check Control File
-- [`check.critical()`](https://drcytometer.github.io/AutoSpectral/reference/check.critical.md)
-  : Perform Critical Check
 - [`clean.controls()`](https://drcytometer.github.io/AutoSpectral/reference/clean.controls.md)
   : Clean Controls
 - [`cosine.similarity.plot()`](https://drcytometer.github.io/AutoSpectral/reference/cosine.similarity.plot.md)
@@ -90,8 +88,6 @@
   : Get Ungated Flow Expression Data
 - [`get.universal.negative()`](https://drcytometer.github.io/AutoSpectral/reference/get.universal.negative.md)
   : Get Universal Negative Control
-- [`lapply.sequential()`](https://drcytometer.github.io/AutoSpectral/reference/lapply.sequential.md)
-  : Sequential lapply
 - [`match.fluorophores()`](https://drcytometer.github.io/AutoSpectral/reference/match.fluorophores.md)
   : Match Fluorophores
 - [`match.markers()`](https://drcytometer.github.io/AutoSpectral/reference/match.markers.md)

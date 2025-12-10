@@ -157,7 +157,7 @@ unmix.folder(
 - parallel:
 
   Logical, default is `FALSE`. Set to `TRUE` to activate parallel
-  processing using futures for multiple FCS files.
+  processing for multiple FCS files.
 
 - threads:
 

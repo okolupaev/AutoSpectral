@@ -155,7 +155,7 @@ get.fluor.variants <- function( fluor,
     pos.unmixed <- unmix.ols( remaining.raw, no.af.spectra )
 
     # cluster
-    som.input <- cbind( pos.unmixed[ pos.idx, ], remaining.raw )
+    som.input <- cbind( pos.unmixed, remaining.raw )
     set.seed( asp$variant.seed )
     map <- EmbedSOM::SOM( som.input, xdim = som.dim, ydim = som.dim )
 

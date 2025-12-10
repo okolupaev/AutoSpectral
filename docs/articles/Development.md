@@ -80,7 +80,13 @@ appreciated.
     variants to search through. My testing shows that a lower number is,
     if anything, better, presumably due to slightly higher quality of
     the spectra being generated while still covering the range of
-    variation.
+    variation. This will help in R as well as Rcpp.
+  - Secondary improvement comes from changing the solving strategy in
+    C++ so that we aren’t recalculating the unmixing matrix (righthand
+    solve) every time.
+  - Tertiary improvment from changing the C++ compiler flags.
+  - The pure R version will now benefit from parallelization,
+    particularly on Mac/Linux.
   - A lot more work is needed on this. I need a smarter strategy.
 
 - Fix the issue causing discontinuities.
@@ -114,6 +120,15 @@ appreciated.
     range of variation seen in the single-colour controls. This is not
     stuff I’m going to put online, so get in touch if you’d like to work
     on this.
+
+- Integration of Poisson IRLS
+
+  - The Poisson IRLS in `AutoSpectralRcpp` is now working considerably
+    better and faster. This may allow for integration of the Poisson
+    optimization after identification of cellular autofluorescence and
+    fluorophore signatures.
+  - For this to be practical, per-cell fluorophore optimization needs to
+    be faster.
 
 To install the `dev` branch:
 

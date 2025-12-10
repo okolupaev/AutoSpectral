@@ -71,6 +71,9 @@ run.af.removal <- function( clean.expr,
 
   # set up parallel processing
   if ( parallel ) {
+    if ( verbose )
+      message( "\033[34mIdentifying and removing autofluorescence contamination \033[0m" )
+
     internal.functions <- c( "remove.af" )
     exports <- c( "args.list", "af.removal.sample", internal.functions )
     result <- create.parallel.lapply(

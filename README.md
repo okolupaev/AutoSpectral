@@ -222,17 +222,17 @@ files you’re processing. For the benchmark 42-colour Aurora data set
 using single-stained cell controls with plenty of data, the slow steps
 in the pre-processing pipeline are `define.flow.control()` and
 `clean.controls()`. For the same Aurora dataset on the aforementioned i7
-Windows laptop, I get: `define.flow.control()` v0.8.7: 12min sequential,
-9min parallel `define.flow.control()` v0.9.0: 4min sequential, 2min
-parallel `clean.controls()` v0.8.7: 11min sequential, not possible
-parallel `clean.controls()` v0.9.0: 11min sequential, 6.5min parallel,
-not fully optimized `get.spectral.variants()` v.0.8.7: 2min sequential,
-1min parallel `get.spectral.variants()` v.0.9.0: 65sec sequential, 32sec
-parallel
+Windows laptop, I get: \* `define.flow.control()` v0.8.7: 12min
+sequential, 9min parallel \* `define.flow.control()` v0.9.0: 4min
+sequential, 2min parallel \* `clean.controls()` v0.8.7: 11min
+sequential, not possible parallel \* `clean.controls()` v0.9.0: 11min
+sequential, 6.5min parallel, not fully optimized \*
+`get.spectral.variants()` v.0.8.7: 2min sequential, 1min parallel \*
+`get.spectral.variants()` v.0.9.0: 65sec sequential, 32sec parallel
 
-Unmixing time depends on the following variable: - file size (number of
-cells/events, including debris) - number of detectors - number of
-fluorophores - unmixing algorithm. OLS and WLS are fast, per-cell AF
+Unmixing time depends on the following variable: \* file size (number of
+cells/events, including debris) \* number of detectors \* number of
+fluorophores \* unmixing algorithm. OLS and WLS are fast, per-cell AF
 extraction will be ~50x slower, per-cell fluorophore optimization will
 be 2-4x slower than per-cell AF when running the “fast” approximation
 using AutoSpectralRcpp, or about 20-50x slower when using the “slow”
@@ -241,16 +241,17 @@ approximation in pure R will likely be comparable to or slower than the
 “slow” method in C++.
 
 Benchmarks for “C3 Lung_GFP_003_Samples.fcs”, again on the 8-core
-laptop, using OpenBLAS and AutoSpectralRcpp, where applicable:
-`unmix.fcs()` WLS or OLS v0.8.7: 9sec `unmix.fcs()` WLS or OLS v0.9.0:
-9sec `unmix.fcs()` perCell AF extraction v0.8.7: 2min `unmix.fcs()`
-perCell AF extraction v0.9.0: 1min `unmix.fcs()` perCell fluorophore
-optimization “fast” v0.8.7: 9min `unmix.fcs()` perCell fluorophore
-optimization “fast” v0.9.0: 2min `unmix.fcs()` perCell fluorophore
-optimization “slow” v0.8.7: 62min `unmix.fcs()` perCell fluorophore
-optimization “slow” v0.9.0: 15min `unmix.folder()` WLS or OLS, 6 files,
-v0.8.7: 67sec sequential, interrupted parallel `unmix.folder()` WLS or
-OLS, 6 files, v0.9.0: 62sec sequential, 31sec parallel
+laptop, using OpenBLAS and AutoSpectralRcpp, where applicable: \*
+`unmix.fcs()` WLS or OLS v0.8.7: 9sec \* `unmix.fcs()` WLS or OLS
+v0.9.0: 9sec \* `unmix.fcs()` perCell AF extraction v0.8.7: 2min \*
+`unmix.fcs()` perCell AF extraction v0.9.0: 1min \* `unmix.fcs()`
+perCell fluorophore optimization “fast” v0.8.7: 9min \* `unmix.fcs()`
+perCell fluorophore optimization “fast” v0.9.0: 2min \* `unmix.fcs()`
+perCell fluorophore optimization “slow” v0.8.7: 62min \* `unmix.fcs()`
+perCell fluorophore optimization “slow” v0.9.0: 15min \*
+`unmix.folder()` WLS or OLS, 6 files, v0.8.7: 67sec sequential,
+interrupted parallel \* `unmix.folder()` WLS or OLS, 6 files, v0.9.0:
+62sec sequential, 31sec parallel
 
 Still some work to be done.
 

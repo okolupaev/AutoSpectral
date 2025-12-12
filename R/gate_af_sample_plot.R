@@ -148,9 +148,14 @@ gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
                             values = asp$ribbon.scale.values )
   }
 
-  ggsave( file.path( asp$figure.clean.control.dir,
-                     paste( asp$af.plot.filename, samp, ".jpg", sep = "_" ) ),
-          plot = gate.plot, width = asp$figure.width,
-          height = asp$figure.height )
+  suppressWarnings(
+    ggsave(
+      file.path(
+        asp$figure.clean.control.dir,
+        paste( asp$af.plot.filename, samp, ".jpg", sep = "_" ) ),
+      plot = gate.plot, width = asp$figure.width,
+      height = asp$figure.height
+    )
+  )
 
 }

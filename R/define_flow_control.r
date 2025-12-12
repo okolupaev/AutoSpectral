@@ -81,9 +81,11 @@ define.flow.control <- function( control.dir,
   # read channels from controls
   if ( verbose ) message( "\033[34m Reading control information \033[0m" )
 
-  control.table <- read.csv( control.def.file, na.strings = "",
-                             stringsAsFactors = FALSE )
+  control.table <- read.csv(
+    control.def.file, na.strings = "", stringsAsFactors = FALSE
+  )
   control.table <- dplyr::filter( control.table, filename != "" )
+
 
   if ( anyDuplicated( control.table$filename ) != 0 )
     stop( "duplicated filenames in fcs data", call. = FALSE )
@@ -116,45 +118,62 @@ define.flow.control <- function( control.dir,
   # get fluorophores and markers
   control.table$sample <- control.table$fluorophore
 
-  control.table$universal.negative[ is.na( control.table$universal.negative ) ] <- FALSE
   control.table$is.viability[ is.na( control.table$is.viability ) ] <- FALSE
   control.table$large.gate[ is.na( control.table$large.gate ) ] <- FALSE
 
-  negative.types <- data.frame( negative = control.table$universal.negative,
-                                large.gate = control.table$large.gate,
-                                viability = control.table$is.viability )
+  # universal.negative must be strictly filename or NA
+  control.table$universal.negative[
+    control.table$universal.negative == "" |
+      is.na(control.table$universal.negative)
+  ] <- NA
 
-  unique.neg <- unique( negative.types )
-  unique.neg <- unique.neg[ unique.neg$negative != FALSE, , drop = FALSE ]
+  # identify universal negative types
+  negative.types <- data.frame(
+    negative = control.table$universal.negative,
+    large.gate = control.table$large.gate,
+    viability = control.table$is.viability,
+    stringsAsFactors = FALSE
+  )
+
+  # identify unique ones
+  unique.neg <- unique( negative.types[ !is.na( negative.types$negative ), ] )
 
   # define samples (replicate variously gated negatives)
-  if ( verbose ) message( "\033[34m Matching negatives for the controls \033[0m" )
+  if ( verbose ) message( "\033[34mMatching negatives for the controls \033[0m" )
 
-  if ( nrow( unique.neg != 0 ) ) {
-    # match samples with corresponding negative by matching gates
-    for ( i in 1 : nrow( unique.neg ) ) {
-      match.found <- any( control.table$filename == unique.neg$negative[ i ] &
-                            control.table$large.gate == unique.neg$large.gate[ i ] &
-                            control.table$is.viability == unique.neg$viability[ i ] )
+  if (nrow(unique.neg) > 0) {
+    for (i in seq_len(nrow(unique.neg))) {
+
+      neg.file <- unique.neg$negative[i]
+      lg       <- unique.neg$large.gate[i]
+      vi       <- unique.neg$viability[i]
+
+      # does a negative with this gate combination already exist?
+      match.found <- any(
+        control.table$filename == neg.file &
+          control.table$large.gate == lg &
+          control.table$is.viability == vi
+      )
 
       if ( !match.found ) {
-        matching.row <- control.table[ control.table$filename == unique.neg$negative[ i ], ]
+        # create a new row copying from the source negative
+        matching.row <- control.table[control.table$filename == neg.file, ]
         new.row <- matching.row[ 1, ]
-        new.row$large.gate <- unique.neg$large.gate[ i ]
-        new.row$is.viability <- unique.neg$viability[ i ]
-        new.row$fluorophore <- "Negative"
-        new.row$universal.negative <- FALSE
-        new.row$sample <- paste( new.row$control.type, "Negative", i )
-        control.table <- rbind( control.table, new.row )
+        new.row$large.gate        <- lg
+        new.row$is.viability      <- vi
+        new.row$fluorophore       <- paste(new.row$control.type, "Negative", i)
+        new.row$sample            <- new.row$fluorophore
+        new.row$universal.negative <- NA   # new row is a replicate, not a source
+        control.table <- rbind(control.table, new.row)
       }
     }
   }
 
   # define gates needed
-  if ( verbose ) message( "\033[34m Determining the gates that will be needed \033[0m" )
+  if ( verbose ) message( "\033[34mDetermining the gates that will be needed \033[0m" )
 
   gate.types <- data.frame(
-    file        = control.table$universal.negative,
+    negative        = control.table$universal.negative,
     type        = control.table$control.type,
     viability   = control.table$is.viability,
     large.gate  = control.table$large.gate,
@@ -162,38 +181,57 @@ define.flow.control <- function( control.dir,
   )
 
   # replace FALSE with NA so missing universal negatives will be treated identically
-  gate.types$file[ gate.types$file == FALSE ] <- NA
-  unique.gates <- unique( gate.types )
-  sample.matches <- apply( gate.types, 1, function( row ) {
-    match( TRUE, apply( unique.gates, 1, function( unique.row ) {
-      all( row == unique.row | ( is.na( row ) & is.na( unique.row ) ) )
-    } ) )
-  } )
-  control.table$gate <- sample.matches
-  flow.gate <- sample.matches
-  gate.type <- unique( sample.matches )
+  unique.gates <- unique(gate.types)
 
-  # matching universal negatives by desired sample and gating
-  # with an exception for viability gating mismatch
-  control.table$universal.negative <- sapply( 1:nrow( control.table ), function( i ) {
-    if ( control.table$universal.negative[ i ] != "FALSE" ) {
-      match.row <- control.table[ control.table$filename ==
-                                    control.table$universal.negative[ i ] &
-                                    control.table$gate == control.table$gate[ i ], ]
+  match.gate <- function(row, unique.gates) {
 
-      if ( nrow( match.row ) > 0 ) {
-        return( match.row$sample )
-      } else {
-        match.row <- control.table[ control.table$filename ==
-                                      control.table$universal.negative[ i ], ]
+    matches <- which(
+      ( (row$negative %in% unique.gates$negative) |
+          (is.na(row$negative) & is.na(unique.gates$negative)) ) &
+        (row$type       == unique.gates$type) &
+        (row$viability  == unique.gates$viability) &
+        (row$large.gate == unique.gates$large.gate)
+    )
 
-        if ( nrow( match.row ) > 0 ) {
-          return( match.row$sample )
-        }
-      }
-    }
-    return( control.table$universal.negative[ i ] )
-  } )
+    if (length(matches) == 0)
+      return(NA_integer_)  # no match found (should not happen)
+
+    matches[1]
+  }
+
+  control.table$gate <- vapply(
+    seq_len( nrow( gate.types ) ),
+    function( i ) match.gate( gate.types[ i, ], unique.gates ),
+    FUN.VALUE = integer( 1 )
+  )
+
+  flow.gate <- control.table$gate
+
+  # rewrite universal.negative as sample names rather than filenames
+  control.table$universal.negative <- sapply(seq_len(nrow(control.table)), function(i) {
+
+    neg.file <- control.table$universal.negative[i]
+
+    # If no assigned universal negative, keep NA
+    if (is.na(neg.file)) return(NA)
+
+    # Try matching within the same gate
+    match.row <- subset(
+      control.table,
+      filename == neg.file &
+        gate == control.table$gate[i]
+    )
+
+    if (nrow(match.row) > 0)
+      return(match.row$sample[1])
+
+    # Else fallback to any matching filename
+    match.row <- subset(control.table, filename == neg.file)
+    if (nrow(match.row) > 0)
+      return(match.row$sample[1])
+
+    return(NA)
+  })
 
   # set samples and gate combos
   flow.sample <- control.table$sample
@@ -306,34 +344,39 @@ define.flow.control <- function( control.dir,
     # define gates on downsampled pooled fcs by type
     if ( verbose ) message( "\033[34m Defining the gates \033[0m" )
 
+    # Remove rows with NA filenames before making gate list
+    valid.rows <- !is.na(control.table$filename)
+    control.table.valid <- control.table[valid.rows, ]
+
     gate.list <- list()
 
-    for( gate in unique( control.table$gate ) ) {
+    for( gate in unique( control.table.valid$gate ) ) {
 
       files.to.gate <- unique(
-        control.table[ control.table$gate == gate, ]$filename )
+        control.table.valid[ control.table.valid$gate == gate, ]$filename
+      )
 
-      files.n <- length( files.to.gate )
+      files.n <- length(files.to.gate)
 
-      downsample.n <- ceiling( asp$gate.downsample.n.cells / files.n )
+      downsample.n <- ceiling(asp$gate.downsample.n.cells / files.n)
 
-      scatter.coords <- lapply( files.to.gate, function( f ) {
+      scatter.coords <- lapply(files.to.gate, function(f) {
         sample.fcs.file(
           f,
-          control.dir= control.dir,
+          control.dir = control.dir,
           downsample.n = downsample.n,
           asp = asp
         )
-      } )
+      })
 
-      scatter.coords <- do.call( rbind, scatter.coords )
+      scatter.coords <- do.call(rbind, scatter.coords)
 
-      viability.gate <- unique( control.table[ control.table$gate == gate, ]$is.viability )
-      is.viability <- ifelse( viability.gate, "viabilityMarker", "nonViability" )
-      large.gate <- unique( control.table[ control.table$gate == gate, ]$large.gate )
-      is.large.gate <- ifelse( large.gate, "largeGate", "smallGate" )
-      control.type <- unique( control.table[ control.table$gate == gate, ]$control.type )
-      samp <- paste( control.type, is.viability, is.large.gate, sep = "_" )
+      viability.gate <- unique(control.table.valid[ control.table.valid$gate == gate, ]$is.viability)
+      is.viability <- ifelse(viability.gate, "viabilityMarker", "nonViability")
+      large.gate <- unique(control.table.valid[ control.table.valid$gate == gate, ]$large.gate)
+      is.large.gate <- ifelse(large.gate, "largeGate", "smallGate")
+      control.type <- unique(control.table.valid[ control.table.valid$gate == gate, ]$control.type)
+      samp <- paste(control.type, is.viability, is.large.gate, sep = "_")
 
       gate.boundary <- do.gate(
         scatter.coords,
@@ -342,11 +385,12 @@ define.flow.control <- function( control.dir,
         samp,
         flow.scatter.and.channel.label,
         control.type,
-        asp )
+        asp
+      )
 
-      gate.list[[ gate ]] <- gate.boundary
-
+      gate.list[[gate]] <- gate.boundary
     }
+
 
     # read in fcs files, selecting data within pre-defined gates
     if ( verbose ) message( "\033[34m Reading FCS files \033[0m" )
@@ -373,7 +417,8 @@ define.flow.control <- function( control.dir,
         exports,
         parallel = parallel,
         threads = threads,
-        export.env = environment()
+        export.env = environment(),
+        allow.mclapply.mac = TRUE
       )
       lapply.function <- result$lapply
     } else {
@@ -413,7 +458,8 @@ define.flow.control <- function( control.dir,
         exports,
         parallel = parallel,
         threads = threads,
-        export.env = environment()
+        export.env = environment(),
+        allow.mclapply.mac = TRUE
       )
       lapply.function <- result$lapply
     } else {

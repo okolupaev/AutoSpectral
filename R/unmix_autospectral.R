@@ -148,7 +148,13 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
   if ( verbose & calculate.error ) {
     af.error.reduction <- ( initial.error - sum( error ) ) / initial.error * 100
     af.error.reduction <- round( af.error.reduction, 2 )
-    message( paste( "Unmixing error reduced by", af.error.reduction, "percent with per-cell AF extraction." ) )
+    message(
+      paste0(
+        "Unmixing error reduced by",
+        af.error.reduction,
+        "percent with per-cell AF extraction."
+      )
+    )
   }
 
   if ( af.only ) {

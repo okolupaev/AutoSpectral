@@ -52,9 +52,16 @@ remove.af <- function( samp,
                        intermediate.figures = FALSE,
                        verbose = TRUE ) {
 
-  if ( verbose )
-    message( paste( "\033[34m", "Identifying autofluorescence contamination in",
-                    samp, "\033[0m" ) )
+  if ( verbose ) {
+    message(
+      paste0(
+        "\033[34m",
+        "Identifying autofluorescence contamination in ",
+        samp,
+        "\033[0m"
+      )
+    )
+  }
 
   # match universal negative
   matching.negative <- universal.negative[[ samp ]]
@@ -158,9 +165,16 @@ remove.af <- function( samp,
   # optionally later pass af.peak, fluor.peak as variable names
   af.boundaries <- fit.af.spline( af.data, non.af.data, asp )
 
-  if ( verbose )
-    message( paste( "\033[34m", "Removing autofluorescence contamination in",
-                    samp, "\033[0m" ) )
+  if ( verbose ) {
+    message(
+      paste0(
+        "\033[34m",
+        "Removing autofluorescence contamination in ",
+        samp,
+        "\033[0m"
+      )
+    )
+  }
 
   # find events in this bound in the stained sample
   gate.data.pos <- expr.data.pos[ , c( names( af.peak ), fluor.peak ) ]
@@ -182,8 +196,17 @@ remove.af <- function( samp,
 
   # plot data pre/post-removal
   if ( main.figures ) {
-    if ( verbose )
-      message( paste( "\033[34m", "Plotting AF removal for", samp, "\033[0m" ) )
+
+    if ( verbose ) {
+      message(
+        paste0(
+          "\033[34m",
+          "Plotting AF removal for ",
+          samp,
+          "\033[0m"
+        )
+      )
+    }
 
     # set limit for plotting of gate
     af.boundary.ggp <- data.frame(
@@ -255,9 +278,17 @@ remove.af <- function( samp,
   }
 
   if ( scatter.match ) {
-    if ( verbose )
-      message( paste( "\033[34m", "Getting scatter-matched negatives for",
-                      samp, "\033[0m" ) )
+
+    if ( verbose ) {
+      message(
+        paste0(
+          "\033[34m",
+          "Getting scatter-matched negatives for ",
+          samp,
+          "\033[0m"
+        )
+      )
+    }
 
     # define positive events as those above a threshold (default 99.5%) in the negative
     if ( samp == "AF" )
@@ -276,16 +307,31 @@ remove.af <- function( samp,
     # warn if few events in positive
     if ( length( pos.above.threshold ) < asp$min.cell.warning.n )
       warning(
-        paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.warning.n,
-               "positive events in", samp,  "\033[0m", "\n" )
+        paste0(
+          "\033[31m",
+          "Warning! Fewer than ",
+          asp$min.cell.warning.n,
+          " positive events in ",
+          samp,
+          "\033[0m",
+          "\n"
+          )
         )
 
     # stop if fewer than minimum acceptable events, returning original data
     if ( length( pos.above.threshold ) < asp$min.cell.stop.n ) {
       warning(
-        paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.stop.n,
-               "positive events in", samp, "\n",
-               "Returning original data", "\033[0m", "\n" )
+        paste0(
+          "\033[31m",
+          "Warning! Fewer than ",
+          asp$min.cell.stop.n,
+          " positive events in ",
+          samp,
+          "\n",
+          "Returning original data",
+          "\033[0m",
+          "\n"
+          )
         )
       return( clean.expr[[ samp ]][ gate.population.idx, ] )
     }
@@ -317,15 +363,30 @@ remove.af <- function( samp,
 
     # warn if few events in negative
     if ( length( neg.population.idx ) < asp$min.cell.warning.n )
-      warning( paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.warning.n,
-                      "scatter-matched negative events for", samp,  "\033[0m", "\n" ) )
+      warning(
+        paste0(
+          "\033[31m",
+          "Warning! Fewer than ",
+          asp$min.cell.warning.n,
+          " scatter-matched negative events for ",
+          samp,
+          "\033[0m",
+          "\n"
+        )
+      )
 
     # stop if fewer than minimum acceptable events, returning original negative
     if ( length( neg.population.idx ) < asp$min.cell.stop.n ) {
       warning(
-        paste( "\033[31m", "Warning! Fewer than",  asp$min.cell.stop.n,
-               "scatter-matched negative events for", samp, "\n",
-               "Reverting to original negative. \n",  "\033[0m" )
+        paste0(
+          "\033[31m", "Warning! Fewer than ",
+          asp$min.cell.stop.n,
+          " scatter-matched negative events for ",
+          samp,
+          "\n",
+          "Reverting to original negative. \n",
+          "\033[0m"
+          )
         )
 
       return( clean.expr[[ samp ]][ gate.population.idx, ] )
@@ -355,6 +416,7 @@ remove.af <- function( samp,
           )
 
     }
+
     return( rbind( pos.selected.expr, neg.scatter.matched ) )
   }
 

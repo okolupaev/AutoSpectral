@@ -44,15 +44,24 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
   if ( use.clean.expr ) {
     if ( is.null( flow.control$clean.expr ) )
       stop( "Cleaned control data could not be found.
-            Run `clean.controls` first." )
+            Run `clean.controls()` first." )
   } else {
     if ( is.null( flow.control$expr.data ) )
       stop( "Control data could not be found in `flow.control`.
-            Run `define.flow.control` first." )
+            Run `define.flow.control()` first." )
   }
 
   # extract fluophore spectra using original "dirty" data
   if ( !use.clean.expr ) {
+
+    message(
+      paste( "\033[34m",
+             "Using original `dirty` expression data to get spectra ",
+             "\033[0m"
+             )
+    )
+
+    # identify data corresponding to fluorophores (not negatives)
     fluorophore.event.samples <- flow.control$event.sample[
       flow.control$event.sample %in% fluorophore.samples ]
     fluorophore.event.samples <- droplevels( fluorophore.event.samples )
@@ -60,9 +69,10 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
     expr.data <- flow.control$expr.data[
       flow.control$event.sample %in% fluorophore.event.samples, ]
 
+    # loop over all of these
     marker.spectra <- lapply( fluorophore.samples, function( samp ) {
 
-      message( paste( "\033[32m", "Processing", samp, "\033[0m" ) )
+      message( paste0( "\033[32m", "Processing ", samp, "\033[0m" ) )
 
       peak.channel <- fluorophore.channels[ fluorophore.samples == samp ]
 
@@ -100,6 +110,14 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
   } else {
     # extract fluophore spectra using "cleaned" data
+    message(
+      paste0( "\033[34m",
+              "Using cleaned expression data to get spectra",
+              "\033[0m"
+      )
+    )
+
+    # identify data corresponding to fluorophores (not negatives)
     fluorophore.event.samples <- flow.control$clean.event.sample[
       flow.control$clean.event.sample %in% fluorophore.samples ]
     fluorophore.event.samples <- droplevels( fluorophore.event.samples )
@@ -107,9 +125,10 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
     expr.data <- flow.control$clean.expr[ flow.control$clean.event.sample %in%
                                             fluorophore.event.samples, ]
 
+    # loop over all of these
     marker.spectra <- lapply( fluorophore.samples, function( samp ) {
 
-      message( paste("\033[32m", "Processing", samp, "\033[0m" ) )
+      message( paste0("\033[32m", "Processing ", samp, "\033[0m" ) )
 
       peak.channel <- fluorophore.channels[ fluorophore.samples == samp ]
 
@@ -149,7 +168,7 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
   # plot spectra
   if ( asp$figures ) {
-    message( paste("\033[32m", "Plotting figures", "\033[0m" ) )
+    message( paste0( "\033[32m", "Plotting figures", "\033[0m" ) )
 
     fluorophore.spectra.plot <- marker.spectra
 
@@ -194,17 +213,27 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
       figure.height = asp$figure.similarity.height
       )
 
-    # unmixing.matrix <- solve( crossprod( t( marker.spectra ) ) ) %*% marker.spectra
-    unmixing.matrix <- solve( crossprod( t( marker.spectra ) ), marker.spectra )
+    # calculate unmixing matrix using singular value decomposition
+    sv <- svd( t( marker.spectra ) )
+    unmixing.matrix <- sv$v %*% ( t( sv$u ) / sv$d )
+
+    # plot the unmixing matrix as a heatmap
     spectral.heatmap( unmixing.matrix, paste( title, "unmixing_matrix", sep = "_" ),
                       plot.dir = asp$figure.spectra.dir,
                       legend.label = "Coefficients", color.palette = "mako" )
   }
 
-  if ( !is.null( asp$table.spectra.dir ) )
-    write.csv( fluorophore.spectra.plot,
-               file = file.path( asp$table.spectra.dir,
-                                 paste0( title, "_", asp$spectra.file.name, ".csv" ) ) )
+  # save the spectra as a CSV file
+  if ( !is.null( asp$table.spectra.dir ) ) {
+    write.csv(
+      fluorophore.spectra.plot,
+      file = file.path(
+        asp$table.spectra.dir,
+        paste0( title, "_", asp$spectra.file.name, ".csv"
+        )
+      )
+    )
+  }
 
   # cosine similarity QC for controls
   similarity.matrix <- cosine.similarity( fluorophore.spectra.plot )
@@ -226,7 +255,7 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
     print( similarity.qc )
 
-    message( "\033[31m Similarity over 0.95 detected for one or more pairs of fluorophores.
+    message( "\033[31mSimilarity over 0.95 detected for one or more pairs of fluorophores.
 
     Check the printed table in the console for problematic combinations.
     If both Fluor1 and Fluor2 are fluorophores,

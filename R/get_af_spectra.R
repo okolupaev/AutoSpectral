@@ -29,6 +29,7 @@
 #' Default is `NULL`, which inherits from `asp$table.af.dir`.
 #' @param title Title for the output spectral plots and csv file. Default is
 #' `Autofluorescence spectra`.
+#' @param verbose Logical, controls messaging. Default is `TRUE`.
 #'
 #' @return A matrix of autofluorescence spectra.
 #'
@@ -41,7 +42,8 @@ get.af.spectra <- function( unstained.sample,
                             figures = TRUE,
                             plot.dir = NULL,
                             table.dir = NULL,
-                            title = NULL ) {
+                            title = NULL,
+                            verbose = TRUE ) {
 
   # set defaults
   if ( is.null( plot.dir ) )
@@ -72,8 +74,7 @@ get.af.spectra <- function( unstained.sample,
   cluster.data <- cbind( unstained.exprs, unmixed )
 
   # get cluster of AF from unstained
-  if ( asp$verbose )
-    message( "Creating a self-organizing map of the autofluorescence" )
+  if ( verbose ) message( "Creating a self-organizing map of the autofluorescence" )
 
   set.seed( 42 )
   map <- EmbedSOM::SOM(
@@ -104,8 +105,7 @@ get.af.spectra <- function( unstained.sample,
   write.csv( af.spectra, file = file.path( table.dir, af.file.name ) )
 
   if ( figures ) {
-    if ( asp$verbose )
-      message( "Plotting spectra" )
+    if ( verbose ) message( "Plotting spectra" )
 
     if ( !dir.exists( plot.dir ) )
       dir.create( plot.dir )

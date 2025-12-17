@@ -65,7 +65,7 @@ get.fluor.variants <- function( fluor,
                                 flow.channel ) {
 
   if ( verbose )
-    message( paste( "\033[34m", "Getting spectral variants for", fluor, "\033[0m" ) )
+    message( paste0( "\033[34m", "Getting spectral variants for ", fluor, "\033[0m" ) )
 
   pos.data <- suppressWarnings(
     flowCore::read.FCS(
@@ -156,7 +156,7 @@ get.fluor.variants <- function( fluor,
 
     # cluster
     som.input <- cbind( pos.unmixed, remaining.raw )
-    set.seed( asp$variant.seed )
+    set.seed( 42 )
     map <- EmbedSOM::SOM( som.input, xdim = som.dim, ydim = som.dim )
 
     # get spectra
@@ -184,7 +184,7 @@ get.fluor.variants <- function( fluor,
 
       # get background on up to 10k events
       if ( nrow( neg.data ) > asp$gate.downsample.n.beads ) {
-        set.seed( asp$variant.seed )
+        set.seed( 42 )
         neg.idx <- sample( nrow( neg.data ), asp$gate.downsample.n.beads )
         background <- apply( neg.data[ neg.idx, spectral.channel ], 2, median )
       } else {
@@ -196,7 +196,7 @@ get.fluor.variants <- function( fluor,
 
       if ( length( neg.idx ) > asp$gate.downsample.n.beads ) {
         # downsample if lots of events
-        set.seed( asp$variant.seed )
+        set.seed( 42 )
         neg.idx <- sample( neg.idx, asp$gate.downsample.n.beads )
         background <- apply( pos.data[ neg.idx, spectral.channel ], 2, median )
 
@@ -222,7 +222,7 @@ get.fluor.variants <- function( fluor,
 
     # cluster
     som.input <- cbind( pos.unmixed, pos.data[ raw.idx, ] )
-    set.seed( asp$variant.seed )
+    set.seed( 42 )
     map <- EmbedSOM::SOM(
       som.input,
       xdim = som.dim,

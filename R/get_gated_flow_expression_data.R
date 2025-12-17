@@ -71,7 +71,7 @@ get.gated.flow.expression.data <- function( samp, file.name, control.dir,
 
   # plot gate applied to sample
   if ( ! is.null( asp$figure.gate.dir ) ) {
-    message( paste( "\033[34m", "Plotting gate for", samp, "\033[0m" ) )
+    message( paste0( "\033[34m", "Plotting gate for: ", samp, "\033[0m" ) )
     suppressWarnings(
       gate.sample.plot(
         samp,

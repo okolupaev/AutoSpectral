@@ -289,9 +289,10 @@ validate.control.file <- function( control.dir, control.def.file, asp ) {
 
   ## ---------- FCS headers ----------
   headers <- lapply( ct$filename, function( f ) {
-    tryCatch({
+    tryCatch( {
       h <- suppressWarnings(
-        flowCore::read.FCSheader( f, path = control.dir )[[ 1 ]]
+        flowCore::read.FCSheader( f, path = control.dir,
+                                  emptyValue = FALSE )[[ 1 ]]
       )
       n.par <- as.integer( h[ "$PAR" ] )
       list(

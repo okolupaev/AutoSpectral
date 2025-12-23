@@ -63,8 +63,9 @@ devtools::install_github("DrCytometer/AutoSpectral")
 
 As of version 0.8.7, there is a Shiny helper tool to assist you in setting up your AutoSpectral control files. This is an interactive html app that opens in RStudio. Hopefully this makes things easier. It is new, so again, probably not perfect. To try it, visit [AutoSpectralHelper](https://github.com/DrCytometer/AutoSpectralHelper). If you update AutoSpectral, I recommend downloading a new version of the app to ensure compatibility.
 
-```{r}
-# To install a specific release, e.g., the previous one:
+
+To install a specific release, e.g., the previous one, use the version number:
+```{r, eval = FALSE}
 remotes::install_github("DrCytometer/AutoSpectral@v0.8.7")
 ```
 
@@ -105,7 +106,7 @@ In particular, see the [Full Workflow](https://drcytometer.github.io/AutoSpectra
 * Gating. The automated gating is not great. See the [help page](https://drcytometer.github.io/AutoSpectral/articles/Gating.html) for tips. I'm working on an alternative.
 * Please note that FCS 3.2 files from the S8 and A8 cytometers are not fully 
 supported in flowCore. You may receive warnings, but things should still work.
-* More stuff in progress will appear in the [Development article](https://drcytometer.github.io/AutoSpectral/articles/Development.html)
+* More stuff in progress will appear in the [Development article](https://drcytometer.github.io/AutoSpectral/articles/Development.html).
 * This is my first R package.
 
 If you want to use data from another cytometer and are wiling to provide files 

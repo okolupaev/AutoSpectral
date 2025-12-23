@@ -70,25 +70,11 @@ new, so again, probably not perfect. To try it, visit
 If you update AutoSpectral, I recommend downloading a new version of the
 app to ensure compatibility.
 
+To install a specific release, e.g., the previous one, use the version
+number:
+
 ``` r
-# To install a specific release, e.g., the previous one:
 remotes::install_github("DrCytometer/AutoSpectral@v0.8.7")
-#> Using GitHub PAT from the git credential store.
-#> Downloading GitHub repo DrCytometer/AutoSpectral@v0.8.7
-#> Skipping 4 packages not available: flowWorkspace, flowCore, PeacoQC, EmbedSOM
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>          checking for file 'C:\Users\Oliver Burton\AppData\Local\Temp\Rtmp8AGana\remotes6098571e2aa5\DrCytometer-AutoSpectral-b02433e/DESCRIPTION' ...  ✔  checking for file 'C:\Users\Oliver Burton\AppData\Local\Temp\Rtmp8AGana\remotes6098571e2aa5\DrCytometer-AutoSpectral-b02433e/DESCRIPTION'
-#>       ─  preparing 'AutoSpectral': (14s)
-#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
-#>       ─  checking for LF line-endings in source and make files and shell scripts (430ms)
-#>       ─  checking for empty or unneeded directories
-#>   Removed empty directory      Removed empty directory 'AutoSpectral/vignettes'
-#>      Omitted 'LazyData' from DESCRIPTION
-#>       ─  building 'AutoSpectral_0.8.7.tar.gz' (384ms)
-#>      
-#> 
-#> Installing package into 'C:/Users/Oliver Burton/AppData/Local/Temp/RtmpWOVJmR/temp_libpath41e45dbe6912'
-#> (as 'lib' is unspecified)
 ```
 
 ### Dev branch
@@ -149,7 +135,7 @@ Workflow](https://drcytometer.github.io/AutoSpectral/articles/Full_AutoSpectral_
   fully supported in flowCore. You may receive warnings, but things
   should still work.
 - More stuff in progress will appear in the [Development
-  article](https://drcytometer.github.io/AutoSpectral/articles/Development.html)
+  article](https://drcytometer.github.io/AutoSpectral/articles/Development.html).
 - This is my first R package.
 
 If you want to use data from another cytometer and are wiling to provide

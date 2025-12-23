@@ -35,11 +35,17 @@
 #'
 #' @export
 
-spectral.heatmap <- function( spectra, title = NULL, plot.dir = NULL,
-                              legend.label = "Intensity",
-                              color.palette = "viridis",
-                              save = TRUE, show.legend = TRUE,
-                              plot.width = NULL, plot.height = NULL ) {
+spectral.heatmap <- function(
+    spectra,
+    title = NULL,
+    plot.dir = NULL,
+    legend.label = "Intensity",
+    color.palette = "viridis",
+    save = TRUE,
+    show.legend = TRUE,
+    plot.width = NULL,
+    plot.height = NULL
+  ) {
 
   if ( !is.null( title ) )
     heatmap.filename <- paste( title, "spectral_heatmap.jpg" )

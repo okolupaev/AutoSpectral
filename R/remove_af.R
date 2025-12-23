@@ -384,7 +384,8 @@ remove.af <- function( samp,
           " scatter-matched negative events for ",
           samp,
           "\n",
-          "Reverting to original negative. \n",
+          "Reverting to original negative.",
+          "\n",
           "\033[0m"
           )
         )

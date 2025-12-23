@@ -35,7 +35,12 @@ sample.fcs.file <- function( file.name, control.dir, downsample.n, asp ) {
 
   if ( event.n <= asp$min.cell.warning.n ) {
     stop(
-      paste( "Fewer than", asp$min.cell.warning.n, "events in", file.name ),
+      paste0(
+        "Fewer than0",
+        asp$min.cell.warning.n,
+        " events in ",
+        file.name
+      ),
       call. = FALSE
     )
   }

@@ -70,16 +70,33 @@ get.universal.negative <- function( clean.expr.data, samp,
   pos.above.threshold <- pos.peak.channel[ pos.peak.channel > positivity.threshold ]
 
   # warn if few events in positive
-  if ( length( pos.above.threshold ) < asp$min.cell.warning.n )
-    warning( paste0( "\033[31m", "Warning! Fewer than ",  asp$min.cell.warning.n,
-                     " positive events in", samp,  "\033[0m", "\n" )  )
+  if ( length( pos.above.threshold ) < asp$min.cell.warning.n ) {
+    warning(
+      paste0(
+        "\033[31m",
+        "Warning! Fewer than ",
+        asp$min.cell.warning.n,
+        " positive events in ",
+        samp,
+        "\033[0m",
+        "\n"
+      )
+    )
+  }
 
   # stop if fewer than minimum acceptable events, returning original data
   if ( length( pos.above.threshold ) < asp$min.cell.stop.n ) {
     warning(
-      paste0( "\033[31m", "Warning! Fewer than ",  asp$min.cell.stop.n,
-              " positive events in ", samp, "\n",
-              "Returning original data", "\033[0m", "\n"
+      paste0(
+        "\033[31m",
+        "Warning! Fewer than ",
+        asp$min.cell.stop.n,
+        " positive events in ",
+        samp,
+        "\n",
+        "Returning original data.",
+        "\033[0m",
+        "\n"
       )
     )
     return( rbind( pos.control.expr, neg.control.expr ) )
@@ -125,8 +142,13 @@ get.universal.negative <- function( clean.expr.data, samp,
     if ( length( neg.population.idx ) < asp$min.cell.warning.n ) {
       warning(
         paste0(
-          "\033[31m", "Warning! Fewer than ",  asp$min.cell.warning.n,
-          " scatter-matched negative events for", samp,  "\033[0m", "\n"
+          "\033[31m",
+          "Warning! Fewer than ",
+          asp$min.cell.warning.n,
+          " scatter-matched negative events for ",
+          samp,
+          "\033[0m",
+          "\n"
         )
       )
     }
@@ -135,9 +157,15 @@ get.universal.negative <- function( clean.expr.data, samp,
     if ( length( neg.population.idx ) < asp$min.cell.stop.n ) {
       warning(
         paste0(
-          "\033[31m", "Warning! Fewer than ",  asp$min.cell.stop.n,
-          " scatter-matched negative events for ", samp, "\n",
-          "Reverting to original negative. \n",  "\033[0m"
+          "\033[31m",
+          "Warning! Fewer than ",
+          asp$min.cell.stop.n,
+          " scatter-matched negative events for ",
+          samp,
+          "\n",
+          "Reverting to original negative.",
+          "\n",
+          "\033[0m"
         )
       )
 

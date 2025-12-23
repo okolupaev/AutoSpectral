@@ -28,8 +28,11 @@ check.control.file <- function(
 
   issues <- validate.control.file( control.dir, control.def.file, asp )
 
-  if ( nrow( issues ) == 0 ) {
+  if ( nrow( issues ) == 0 & strict ) {
     return( invisible( TRUE ) )
+  } else if ( nrow( issues ) == 0 & ! strict ) {
+    message( "\033[34m No critical errors found in control file.\033[0m" )
+    return( issues )
   }
 
   ## ---- group and summarize ----

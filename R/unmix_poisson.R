@@ -25,8 +25,14 @@
 #'
 #' @export
 
-unmix.poisson <- function( raw.data, spectra, asp, initial.weights = NULL,
-                           parallel = TRUE, threads = NULL ) {
+unmix.poisson <- function(
+    raw.data,
+    spectra,
+    asp,
+    initial.weights = NULL,
+    parallel = TRUE,
+    threads = NULL
+) {
 
   if ( parallel & is.null( threads ) ) threads <- asp$worker.process.n
 

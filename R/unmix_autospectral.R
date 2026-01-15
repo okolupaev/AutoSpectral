@@ -6,6 +6,8 @@
 #' Unmix using the AutoSpectral method to extract autofluorescence and optimize
 #' fluorophore signatures at the single cell level.
 #'
+#' @importFrom lifecycle deprecate_warn
+#'
 #' @param raw.data Expression data from raw fcs files. Cells in rows and
 #' detectors in columns. Columns should be fluorescent data only and must
 #' match the columns in spectra.
@@ -23,8 +25,6 @@
 #' @param weights Optional numeric vector of weights (one per fluorescent
 #' detector). Default is `NULL`, in which case weighting will be done by
 #' channel means (Poisson variance). Only used if `weighted`.
-#' @param calculate.error Logical, whether to calculate the RMSE unmixing model
-#' accuracy and include it as an output. Default is `FALSE`.
 #' @param use.dist0 Logical, controls whether the selection of the optimal AF
 #' signature for each cell is determined by which unmixing brings the fluorophore
 #' signals closest to 0 (`use.dist0` = `TRUE`) or by which unmixing minimizes the
@@ -37,19 +37,38 @@
 #' will be used. `asp$worker.process.n` is set by default to be one less than the
 #' available cores on the machine. Multi-threading is only used if `parallel` is
 #' `TRUE`.
+#' @param ... Ignored. Previously used for deprecated arguments such as
+#' `calculate.error`.
 #'
 #' @return Unmixed data with cells in rows and fluorophores in columns.
 #'
 #' @export
 
-unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
-                                spectra.variants = NULL,
-                                weighted = FALSE, weights = NULL,
-                                calculate.error = FALSE,
-                                use.dist0 = TRUE,
-                                verbose = TRUE,
-                                parallel = TRUE,
-                                threads = NULL ) {
+unmix.autospectral <- function(
+    raw.data,
+    spectra,
+    af.spectra,
+    asp,
+    spectra.variants = NULL,
+    weighted = FALSE,
+    weights = NULL,
+    use.dist0 = TRUE,
+    verbose = TRUE,
+    parallel = TRUE,
+    threads = NULL,
+    ...
+) {
+
+  # warn regarding deprecated arguments
+  dots <- list( ... )
+
+  if ( !is.null( dots$calculate.error ) ) {
+    lifecycle::deprecate_warn(
+      "0.9.1",
+      "unmix.autospectral(calculate.error)",
+      "no longer used"
+    )
+  }
 
   # check for AF in spectra, remove if present
   if ( "AF" %in% rownames( spectra ) )
@@ -60,11 +79,11 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
   if ( nrow( af.spectra ) < 2 )
     stop( "Multiple AF spectra must be provided." )
 
-  # select unmixing algorithm
+  # select fast unmixing algorithm
   if ( weighted )
-    unmix <- unmix.wls
+    unmix <- unmix.wls.fast
   else
-    unmix <- unmix.ols
+    unmix <- unmix.ols.fast
 
   if ( weighted & is.null( weights ) ) {
     weights <- pmax( abs( colMeans( raw.data ) ), 1e-6 )
@@ -87,19 +106,13 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
 
   unmixed <- unmix( raw.data, spectra, weights )
 
-  # calculate error
+  # calculate error for tracking each cell's best fit
   if ( use.dist0 ) {
     error <- rowSums( abs( unmixed[ , fluorophores, drop = FALSE ] ) )
     initial.error <- sum( error )
   } else {
     error <- rowSums( abs( raw.data - ( unmixed %*% spectra ) ) )
     initial.error <- sum( error )
-  }
-
-  if ( calculate.error ) {
-    # track full residuals for RMSE calculation
-    residual <- raw.data - ( unmixed %*% spectra )
-    RMSE <- sqrt( mean( residual^2 ) )
   }
 
   # add AF column, set AF Index
@@ -131,41 +144,14 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
     unmixed[ improved, fluors.af ] <- unmixed.af[ improved, ]
     unmixed[ improved, "AF Index" ] <- af
 
-    # update full residuals if tracking error by RMSE
-    if ( calculate.error )
-      residual[ improved, ] <- raw.data[ improved, ] -
-      ( unmixed.af[ improved, ] %*% combined.spectra )
-
     # update AF fitted values and residuals with improved cells
     if ( !af.only )
       fitted.af[ improved, ] <- unmixed.af[ improved, "AF", drop = FALSE ] %*%
         af.spectra[ af, , drop = FALSE ]
   }
 
-  if ( calculate.error )
-    RMSE <- sqrt( mean( residual^2 ) )
+  if ( af.only ) return( unmixed )
 
-  if ( verbose & calculate.error ) {
-    af.error.reduction <- ( initial.error - sum( error ) ) / initial.error * 100
-    af.error.reduction <- round( af.error.reduction, 2 )
-    message(
-      paste0(
-        "Unmixing error reduced by",
-        af.error.reduction,
-        "percent with per-cell AF extraction."
-      )
-    )
-  }
-
-  if ( af.only ) {
-    if ( calculate.error )
-      return( list(
-        RMSE = RMSE,
-        unmixed.data = unmixed
-      ) )
-    else
-      return( unmixed )
-  }
 
   ### per cell fluorophore optimization
   # unpack spectral variants
@@ -186,13 +172,7 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
   if ( !( length( optimize.fluors ) > 0 ) ) {
     warning( "No matching fluorophores between supplied spectra and spectral variants.
              No spectral optimization performed." )
-    if ( calculate.error )
-      return( list(
-        RMSE = RMSE,
-        unmixed.data = unmixed
-      ) )
-    else
-      return( unmixed )
+    return( unmixed )
   }
 
   if ( verbose ) message( "Optimizing fluorophore unmixing cell-by-cell" )
@@ -248,6 +228,7 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
         if ( length( fluors.to.sort ) == 0 ) return( cell.unmixed )
 
         fluor.order <- sort( cell.unmixed[ , fluors.to.sort ], decreasing = TRUE )
+
         for ( fl in names( fluor.order ) ) {
           abundance <- cell.unmixed[ , fl ]
           if ( abundance <= 0 ) next
@@ -258,8 +239,12 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
           delta.mat <- sweep( fl.variants, 2, old.spectrum, "-" )
           delta.mat <- delta.mat * as.numeric( abundance )
 
-          resid.candidates <- matrix( resid, nrow = nrow( delta.mat ),
-                                      ncol = length( resid ), byrow = TRUE ) - delta.mat
+          resid.candidates <- matrix(
+            resid,
+            nrow = nrow( delta.mat ),
+            ncol = length( resid ),
+            byrow = TRUE
+          ) - delta.mat
           errors <- rowSums( abs( resid.candidates ) )
 
           best.idx <- which.min( errors )
@@ -286,11 +271,7 @@ unmix.autospectral <- function( raw.data, spectra, af.spectra, asp,
   unmixed.opt <- do.call( rbind, unmixed.opt )
   unmixed[ , fluorophores ] <- unmixed.opt
 
-  if ( calculate.error )
-    return( list(
-      RMSE = RMSE,
-      unmixed.data = unmixed
-    ) )
-  else
-    return( unmixed )
+  return( unmixed )
+
 }
+

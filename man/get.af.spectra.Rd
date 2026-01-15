@@ -8,7 +8,6 @@ get.af.spectra(
   unstained.sample,
   asp,
   spectra,
-  threads = NULL,
   som.dim = 10,
   figures = TRUE,
   plot.dir = NULL,
@@ -26,9 +25,6 @@ stained samples to which the AF will be applied, ideally.}
 
 \item{spectra}{Spectral signatures of fluorophores, normalized between 0
 and 1, with fluorophores in rows and detectors in columns.}
-
-\item{threads}{Numeric. Number of threads to use for parallel processing in
-the creation of the SOM. Default \code{NULL} reverts to \code{asp$worker.process.n}.}
 
 \item{som.dim}{Number of x and y dimensions for the SOM. Default is \code{10}.}
 

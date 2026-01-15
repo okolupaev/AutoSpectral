@@ -18,7 +18,6 @@ unmix.fcs(
   file.suffix = NULL,
   include.raw = FALSE,
   include.imaging = FALSE,
-  calculate.error = FALSE,
   use.dist0 = TRUE,
   divergence.threshold = 10000,
   divergence.handling = "Balance",
@@ -26,7 +25,8 @@ unmix.fcs(
   speed = "fast",
   parallel = TRUE,
   threads = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -79,9 +79,6 @@ expression data in the written FCS file. Default is \code{FALSE}.}
 \item{include.imaging}{A logical value indicating whether to include imaging
 parameters in the written FCS file. Default is \code{FALSE}.}
 
-\item{calculate.error}{Logical, whether to calculate the RMSE unmixing model
-accuracy and include it as a keyword in the FCS file.}
-
 \item{use.dist0}{Logical, controls whether the selection of the optimal AF
 signature for each cell is determined by which unmixing brings the fluorophore
 signals closest to 0 (\code{use.dist0} = \code{TRUE}) or by which unmixing minimizes the
@@ -120,6 +117,9 @@ available cores on the machine. Multi-threading is only used if \code{parallel} 
 \code{TRUE}.}
 
 \item{verbose}{Logical, controls messaging. Default is \code{TRUE}.}
+
+\item{...}{Ignored. Previously used for deprecated arguments such as
+\code{calculate.error}.}
 }
 \value{
 None. The function writes the unmixed FCS data to a file.

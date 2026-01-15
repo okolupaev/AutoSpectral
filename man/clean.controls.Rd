@@ -35,10 +35,10 @@ the data and essential information about the cytometer and data structure.}
 remove time-based inconsistencies in the controls.}
 
 \item{trim}{Logical, default is \code{FALSE}. Whether to remove extreme events
-(positive and negative) from controls.}
+(positive and negative) from controls. Deprecated.}
 
 \item{trim.factor}{Numeric. Default is \code{asp$rlm.trim.factor}. Required if
-\code{trim = TRUE}.}
+\code{trim = TRUE}. Deprecated.}
 
 \item{af.remove}{Logical, default is \code{TRUE}. Whether to remove intrusive
 autofluorescence contamination from cell controls using PCA-based
@@ -63,7 +63,7 @@ events based on scatter profiles matching the positive events. Defines a
 region of FSC and SSC based on the distribution of selected positive events.}
 
 \item{scrub}{Logical, if \code{TRUE} allows for re-cleaning of already cleaned
-data, provided there are clean data in \code{flow.control}.}
+data, provided there are clean data in \code{flow.control}. Deprecated.}
 
 \item{intermediate.figures}{Logical, if \code{TRUE} returns additional figures to
 show the inner workings of the cleaning, including definition of low-AF cell
@@ -90,15 +90,12 @@ Returns a modified \code{flow.control} with the original data intact. New, clean
 data and corresponding factors are stored in new slots.
 }
 \description{
-A four-part function to clean single-color controls in order to extract
+A multi-part function to clean single-color controls in order to extract
 fluorophore signatures. Any part can be run independently:
 \itemize{
-\item \strong{Stage 1}: PeacoQC to eliminate flow artefacts. Not required in most cases.
-\item \strong{Stage 2}: Trimming to eliminate extreme events. Not recommended for most
-use cases.
-\item \strong{Stage 3}: Autofluorescence noise removal using PCA unmixing on matching
+\item \strong{Stage 1}: Autofluorescence noise removal using PCA unmixing on matching
 unstained (cells only).
-\item \strong{Stage 4}: Brightest event selection from positive, universal negative
+\item \strong{Stage 2}: Brightest event selection from positive, universal negative
 from matching negative, and downsampling to speed up RLM spectra optimization.
 }
 }

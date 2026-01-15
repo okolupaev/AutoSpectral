@@ -12,11 +12,11 @@ unmix.autospectral(
   spectra.variants = NULL,
   weighted = FALSE,
   weights = NULL,
-  calculate.error = FALSE,
   use.dist0 = TRUE,
   verbose = TRUE,
   parallel = TRUE,
-  threads = NULL
+  threads = NULL,
+  ...
 )
 }
 \arguments{
@@ -44,9 +44,6 @@ unmixing as the base algorithm. Default is \code{FALSE} and will use OLS.}
 detector). Default is \code{NULL}, in which case weighting will be done by
 channel means (Poisson variance). Only used if \code{weighted}.}
 
-\item{calculate.error}{Logical, whether to calculate the RMSE unmixing model
-accuracy and include it as an output. Default is \code{FALSE}.}
-
 \item{use.dist0}{Logical, controls whether the selection of the optimal AF
 signature for each cell is determined by which unmixing brings the fluorophore
 signals closest to 0 (\code{use.dist0} = \code{TRUE}) or by which unmixing minimizes the
@@ -62,6 +59,9 @@ will be used. The new parallel processing should always be faster.}
 will be used. \code{asp$worker.process.n} is set by default to be one less than the
 available cores on the machine. Multi-threading is only used if \code{parallel} is
 \code{TRUE}.}
+
+\item{...}{Ignored. Previously used for deprecated arguments such as
+\code{calculate.error}.}
 }
 \value{
 Unmixed data with cells in rows and fluorophores in columns.

@@ -6,7 +6,6 @@
 #' This function reads channel information from control files and corrects
 #' channel names based on specified forbidden characters.
 #'
-#' @importFrom utils read.csv read.table write.table
 #' @importFrom flowCore read.FCS exprs
 #'
 #' @param control.dir Directory containing control files.
@@ -18,19 +17,23 @@
 #'
 #' @export
 
-read.channel <- function( control.dir, control.def.file, asp )
-{
+read.channel <- function(
+    control.dir,
+    control.def.file,
+    asp
+) {
+
   # read markers from file if available
   if ( ! is.null( asp$marker.file.name ) && file.exists( asp$marker.file.name ) )
     return(
-      read.table(
+      utils::read.table(
         asp$marker.file.name, sep = ",",
         stringsAsFactors = FALSE
       )
     )
 
   # read definition of controls
-  control.table <- read.csv(
+  control.table <- utils::read.csv(
     control.def.file,
     stringsAsFactors = FALSE,
     strip.white = TRUE
@@ -86,7 +89,7 @@ read.channel <- function( control.dir, control.def.file, asp )
   )
 
   if ( ! is.null( asp$marker.file.name ) )
-    write.table(
+    utils::write.table(
       flow.set.channel.table,
       file = asp$marker.file.name,
       row.names = FALSE,

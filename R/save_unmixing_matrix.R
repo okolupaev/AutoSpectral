@@ -15,8 +15,6 @@
 #' level. In both cases, the weights should be the inverse (1/noise). Use function
 #' `calculate.weights()` to extract `colMeans` weighting from an FCS file.
 #'
-#' @importFrom utils write.csv
-#'
 #' @param spectra Matrix or dataframe containing spectral data. Note that the
 #' unmixing matrix depends on the combination of fluorophore signals present in
 #' the spectral mixing matrix.
@@ -34,12 +32,14 @@
 #'
 #' @export
 
-save.unmixing.matrix <- function( spectra,
-                                  weights = NULL,
-                                  filename = "unmixing_matrix",
-                                  output.dir = "./table_spectra",
-                                  figures = TRUE,
-                                  color.palette = "mako" ) {
+save.unmixing.matrix <- function(
+    spectra,
+    weights = NULL,
+    filename = "unmixing_matrix",
+    output.dir = "./table_spectra",
+    figures = TRUE,
+    color.palette = "mako"
+  ) {
 
   if ( figures & !dir.exists( output.dir ) )
     dir.create( output.dir )
@@ -77,6 +77,9 @@ save.unmixing.matrix <- function( spectra,
       color.palette = color.palette
     )
 
-  write.csv( unmixing.matrix, file.path( output.dir, paste0( filename, ".csv" ) ) )
+  utils::write.csv(
+    unmixing.matrix,
+    file.path( output.dir, paste0( filename, ".csv" ) )
+  )
 }
 

@@ -12,7 +12,6 @@
 #' @importFrom ggplot2 guide_colorbar geom_text geom_point
 #' @importFrom scattermore geom_scattermore
 #' @importFrom fields interp.surface
-#' @importFrom rlang .data
 #'
 #' @param samp Sample identifier.
 #' @param gate.data Matrix containing gate data points.
@@ -32,11 +31,17 @@
 #'
 #' @return Saves the plot as a JPEG file in the specified directory.
 
-gate.define.plot <- function( samp, gate.data, gate.marker, gate.bound,
-                              gate.region, gate.population,
-                              scatter.and.channel.label, asp,
-                              color.palette = "rainbow" )
-{
+gate.define.plot <- function(
+    samp,
+    gate.data,
+    gate.marker,
+    gate.bound,
+    gate.region,
+    gate.population,
+    scatter.and.channel.label,
+    asp,
+    color.palette = "rainbow"
+  ) {
 
   gate.data.ggp <- data.frame(
     x = gate.data[ , 1 ],
@@ -92,7 +97,7 @@ gate.define.plot <- function( samp, gate.data, gate.marker, gate.bound,
   y.lab.idx <- which( scatter.and.channel.label == gate.marker[ 2 ] )
   y.lab <- names( scatter.and.channel.label[ y.lab.idx ] )
 
-  gate.plot <- ggplot( gate.data.ggp, aes( .data$x, .data$y ) ) +
+  gate.plot <- ggplot( gate.data.ggp, aes( x, y ) ) +
     geom_scattermore(
       pointsize = asp$figure.gate.point.size,
       alpha = 1, na.rm = TRUE ) +
@@ -128,16 +133,16 @@ gate.define.plot <- function( samp, gate.data, gate.marker, gate.bound,
       limits = c( asp$scatter.data.min.y, asp$scatter.data.max.y ),
       expand = expansion( asp$figure.gate.scale.expand ) ) +
     geom_path(
-      aes( .data$x, .data$y, color = NULL ),
+      aes( x, y, color = NULL ),
       data = gate.bound.ggp, linewidth = asp$figure.gate.line.size,
       linetype = "dashed"
       ) +
     geom_path(
-      aes( .data$x, .data$y, color = NULL ),
+      aes( x, y, color = NULL ),
       data = gate.region.ggp, linewidth = asp$figure.gate.line.size
       ) +
     geom_path(
-      aes( .data$x, .data$y, color = NULL ),
+      aes( x, y, color = NULL ),
       data = gate.boundary.ggp, linewidth = asp$figure.gate.line.size
       ) +
     geom_point(
@@ -167,8 +172,12 @@ gate.define.plot <- function( samp, gate.data, gate.marker, gate.bound,
       )
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+    )
+
+  # set the color palette on the plot
   if ( color.palette %in% virids.colors ) {
     gate.plot <- gate.plot +
       scale_fill_viridis_c( option = color.palette )

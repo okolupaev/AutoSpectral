@@ -10,7 +10,6 @@
 #'
 #' @importFrom MASS rlm
 #' @importFrom tripack tri.mesh convex.hull
-#' @importFrom stats predict sd
 #'
 #' @param af.cells A matrix containing the autofluorescence data.
 #' @param non.af.cells A matrix containing the low autofluorescence data.
@@ -47,11 +46,11 @@ fit.af.spline <- function( af.cells, non.af.cells, asp ) {
     warning( "The IRLS algorithm employed in 'rlm' did not converge." )
 
   # define events within n standard deviations of the spline
-  predicted <- predict( rlm.fit, newdata = model.data )
+  predicted <- stats::predict( rlm.fit, newdata = model.data )
   model.data$predicted <- predicted
   model.data$residuals <- model.data$y - predicted
 
-  sd.residuals <- sd( model.data$residuals )
+  sd.residuals <- stats::sd( model.data$residuals )
 
   model.fit <- model.data[ abs(
     model.data$residuals ) <= asp$af.spline.sd.n * sd.residuals, ]

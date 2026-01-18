@@ -12,7 +12,6 @@
 #' @importFrom ggplot2 scale_fill_gradientn scale_fill_viridis_c stat_density_2d
 #' @importFrom ggplot2 xlab ylab scale_x_continuous scale_y_continuous theme_bw
 #' @importFrom ggplot2 theme element_rect element_text margin ggsave
-#' @importFrom rlang .data
 #' @importFrom scattermore geom_scattermore
 #'
 #' @param pos.expr.data A matrix containing the positive expression data.
@@ -31,9 +30,14 @@
 #'
 #' @export
 
-scatter.match.plot <- function( pos.expr.data, neg.expr.data, fluor.name,
-                                scatter.param, asp,
-                                color.palette = "rainbow" ) {
+scatter.match.plot <- function(
+    pos.expr.data,
+    neg.expr.data,
+    fluor.name,
+    scatter.param,
+    asp,
+    color.palette = "rainbow"
+  ) {
 
   pos.scatter.plot <- data.frame(
     pos.expr.data[ , scatter.param ],
@@ -61,7 +65,7 @@ scatter.match.plot <- function( pos.expr.data, neg.expr.data, fluor.name,
   )
 
   scatter.plot <- suppressWarnings(
-    ggplot( data.ggp, aes( .data$x, .data$y, .data$group ) ) +
+    ggplot( data.ggp, aes( x, y, group ) ) +
       geom_scattermore(
         pointsize = asp$figure.gate.point.size * 3,
         alpha = 1, na.rm = TRUE
@@ -124,8 +128,12 @@ scatter.match.plot <- function( pos.expr.data, neg.expr.data, fluor.name,
   )
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+
+  # set the color palette on the plot
   if ( color.palette %in% virids.colors ) {
     scatter.plot <- scatter.plot +
       scale_fill_viridis_c( option = color.palette )

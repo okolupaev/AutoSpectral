@@ -1,11 +1,9 @@
 # gate_af_sample_plot.r
 
-
-#' @title Plot Gate Autofluorescence Sample
+#' @title Plot Autofluorescence Gates on Samples
 #'
 #' @description
-#' This function plots the gate autofluorescence sample, including upper and
-#' lower boundaries, using ggplot2 and other necessary packages.
+#' This function plots the autofluorescence exclusion gate on the sample(s).
 #'
 #' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous
 #' @importFrom ggplot2 stat_density_2d theme_bw theme element_line
@@ -13,7 +11,6 @@
 #' @importFrom ggplot2 scale_fill_viridis_c geom_path
 #' @importFrom scattermore geom_scattermore
 #'
-
 #' @param plot.data Matrix containing autofluorescence data points.
 #' @param samp Sample identifier.
 #' @param af.boundary.upper Matrix containing upper boundary information.
@@ -28,9 +25,14 @@
 #'
 #' @return Saves the plot as a JPEG file in the specified directory.
 
-gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
-                                 max.points = 1e5,
-                                 color.palette = "viridis" ) {
+gate.af.sample.plot <- function(
+    plot.data,
+    samp,
+    af.boundary.upper,
+    asp,
+    max.points = 1e5,
+    color.palette = "viridis"
+  ) {
 
   # set plot limits
   breaks <- asp$ribbon.breaks
@@ -53,19 +55,6 @@ gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
     neg = asp$default.transformation.param$neg,
     widthBasis = asp$default.transformation.param$width,
     inverse = FALSE )
-  biexp.inverse <- flowWorkspace::flowjo_biexp(
-    channelRange = asp$default.transformation.param$length,
-    maxValue = asp$default.transformation.param$max.range,
-    pos = asp$default.transformation.param$pos,
-    neg = asp$default.transformation.param$neg,
-    widthBasis = asp$default.transformation.param$width,
-    inverse = TRUE )
-
-  plot.biexp.transform <- scales::trans_new(
-    name = "biexp",
-    transform = biexp.transform,
-    inverse = biexp.inverse
-  )
 
   # downsample data
   if ( nrow( plot.data ) < max.points )
@@ -76,14 +65,16 @@ gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
     y = plot.data[ 1:max.points, 2 ]
   )
 
-  # transform data
-  plot.data$x.trans <- plot.biexp.transform$transform( plot.data$x )
-  plot.data$y.trans <- plot.biexp.transform$transform( plot.data$y )
-
+  # create main plot
   gate.plot <- suppressWarnings(
-    ggplot( plot.data, aes( x = x.trans, y = y.trans ) ) +
+    ggplot(
+      plot.data,
+      aes(
+        x = biexp.transform( x ),
+        y = biexp.transform( y )
+      )
+    ) +
       geom_scattermore(
-        # aes( x = x.trans, y = y.trans ),
         pointsize = asp$figure.gate.point.size,
         alpha = 1,
         na.rm = TRUE
@@ -95,20 +86,24 @@ gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
         na.rm = TRUE ) +
       scale_x_continuous(
         name = x.lab,
-        breaks = plot.biexp.transform$transform( breaks ),
-        limits = plot.biexp.transform$transform( limits ),
+        breaks = biexp.transform( breaks ),
+        limits = biexp.transform( limits ),
         labels = axis.labels
       ) +
       scale_y_continuous(
         name = y.lab,
-        breaks = plot.biexp.transform$transform( breaks ),
-        limits = plot.biexp.transform$transform( limits ),
+        breaks = biexp.transform( breaks ),
+        limits = biexp.transform( limits ),
         labels = axis.labels
       ) +
       theme_bw() +
       theme(
-        plot.margin = margin( asp$figure.margin, asp$figure.margin,
-                              asp$figure.margin, asp$figure.margin ),
+        plot.margin = margin(
+          asp$figure.margin,
+          asp$figure.margin,
+          asp$figure.margin,
+          asp$figure.margin
+        ),
         legend.position = "none",
         axis.ticks = element_line( linewidth = asp$figure.panel.line.size ),
         axis.text = element_text( size = asp$figure.axis.text.size ),
@@ -120,6 +115,7 @@ gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
       )
   )
 
+  # add AF gate boundary
   if ( !is.null( af.boundary.upper ) ){
     af.boundary.upper.ggp <- data.frame(
       x = c( af.boundary.upper$x,
@@ -128,26 +124,36 @@ gate.af.sample.plot <- function( plot.data, samp, af.boundary.upper, asp,
              af.boundary.upper$y[ 1 ] )
     )
 
-    af.boundary.upper.ggp$x <- plot.biexp.transform$transform( af.boundary.upper.ggp$x )
-    af.boundary.upper.ggp$y <- plot.biexp.transform$transform( af.boundary.upper.ggp$y )
+    af.boundary.upper.ggp$x <- biexp.transform( af.boundary.upper.ggp$x )
+    af.boundary.upper.ggp$y <- biexp.transform( af.boundary.upper.ggp$y )
 
     gate.plot <- gate.plot +
-      geom_path( aes( .data$x, .data$y, color = NULL ),
-               data = af.boundary.upper.ggp, linewidth = asp$figure.gate.line.size )
+      geom_path(
+        aes( .data$x, .data$y, color = NULL ),
+        data = af.boundary.upper.ggp,
+        linewidth = asp$figure.gate.line.size
+      )
   }
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+
+  # set color palette on plot
   if ( color.palette %in% virids.colors ) {
     gate.plot <- gate.plot +
       scale_fill_viridis_c( option = color.palette )
   } else {
     gate.plot <- gate.plot +
-      scale_fill_gradientn( colours = asp$density.palette.base.color,
-                            values = asp$ribbon.scale.values )
+      scale_fill_gradientn(
+        colours = asp$density.palette.base.color,
+        values = asp$ribbon.scale.values
+      )
   }
 
+  # save the final plot
   suppressWarnings(
     ggsave(
       file.path(

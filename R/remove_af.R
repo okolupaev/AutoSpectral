@@ -8,7 +8,6 @@
 #'
 #' @importFrom sp point.in.polygon
 #' @importFrom flowWorkspace flowjo_biexp
-#' @importFrom stats prcomp sd
 #'
 #' @param samp Sample identifier.
 #' @param clean.expr List containing cleaned expression data.
@@ -38,19 +37,21 @@
 #' @return A matrix containing the expression data with autofluorescent events
 #' removed for the sample.
 
-remove.af <- function( samp,
-                       clean.expr,
-                       spectral.channel,
-                       peak.channel,
-                       universal.negative,
-                       asp,
-                       scatter.param,
-                       negative.n = 500,
-                       positive.n = 1000,
-                       scatter.match = TRUE,
-                       main.figures = TRUE,
-                       intermediate.figures = FALSE,
-                       verbose = TRUE ) {
+remove.af <- function(
+    samp,
+    clean.expr,
+    spectral.channel,
+    peak.channel,
+    universal.negative,
+    asp,
+    scatter.param,
+    negative.n = 500,
+    positive.n = 1000,
+    scatter.match = TRUE,
+    main.figures = TRUE,
+    intermediate.figures = FALSE,
+    verbose = TRUE
+  ) {
 
   if ( verbose ) {
     message(
@@ -76,13 +77,16 @@ remove.af <- function( samp,
   }
 
   # use PCA to project autofluorescence
-  expr.data.center <- apply( expr.data.neg[ , spectral.channel ], 2, median )
-  expr.data.scale <- apply( expr.data.neg[ , spectral.channel ], 2, mad )
+  expr.data.center <- apply( expr.data.neg[ , spectral.channel ], 2, stats::median )
+  expr.data.scale <- apply( expr.data.neg[ , spectral.channel ], 2, stats::mad )
 
-  scaled.data <- scale( expr.data.neg[ , spectral.channel ], center = expr.data.center,
-                        scale = expr.data.scale )
+  scaled.data <- scale(
+    expr.data.neg[ , spectral.channel ],
+    center = expr.data.center,
+    scale = expr.data.scale
+  )
 
-  af.pca <- prcomp( scaled.data, center = FALSE, scale. = FALSE )
+  af.pca <- stats::prcomp( scaled.data, center = FALSE, scale. = FALSE )
 
   # use the first 2 components to identify main AF signatures to be removed
   af.components <- apply( af.pca$rotation[ , 1:2 ], 2, function( x ) x / max( x ) )
@@ -105,12 +109,16 @@ remove.af <- function( samp,
   unmixed.neg <- unmixed.neg - zero.point
 
   # determine which component has the most variation (intrusive AF)
-  af.sd <- apply( unmixed.neg[ , 1:2 ], 2, sd )
+  af.sd <- apply( unmixed.neg[ , 1:2 ], 2, stats::sd )
   af.order <- order( af.sd, decreasing = TRUE )
 
   # get gate defining low AF region
-  af.gate.idx <- do.gate.af( unmixed.neg[ , af.order ], matching.negative, asp,
-                             intermediate.figures )
+  af.gate.idx <- do.gate.af(
+    unmixed.neg[ , af.order ],
+    matching.negative,
+    asp,
+    intermediate.figures
+  )
 
   # get corresponding raw data (non-PCA)
   af.cells <- expr.data.neg[ -af.gate.idx, , drop = FALSE ]
@@ -125,8 +133,8 @@ remove.af <- function( samp,
   }
 
   # get median channel difference as spectrum of intrusive AF
-  af.median <- apply( af.cells[ , spectral.channel ], 2, median )
-  non.af.median <- apply( non.af.cells[ , spectral.channel ], 2, median )
+  af.median <- apply( af.cells[ , spectral.channel ], 2, stats::median )
+  non.af.median <- apply( non.af.cells[ , spectral.channel ], 2, stats::median )
   af.spectrum <- af.median - non.af.median
   af.spectrum <- af.spectrum / max( abs( af.spectrum ) )
 
@@ -273,7 +281,12 @@ remove.af <- function( samp,
         )
 
       # plot AF removal gating on negative control
-      gate.af.sample.plot( gate.data.neg, negative.label, af.boundary.ggp, asp )
+      gate.af.sample.plot(
+        gate.data.neg,
+        negative.label,
+        af.boundary.ggp,
+        asp
+      )
     }
   }
 
@@ -422,18 +435,5 @@ remove.af <- function( samp,
   }
 
   return( clean.expr[[ samp ]][ gate.population.idx, ] )
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

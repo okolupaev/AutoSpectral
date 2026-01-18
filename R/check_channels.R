@@ -6,8 +6,6 @@
 #' A helper function to reorganize the spectral channels in a nice order for
 #' plotting. Puts them in excitation/emission order.
 #'
-#' @importFrom utils read.csv
-#'
 #' @param spectral.channels Vector of initial spectral channel names.
 #' @param asp The AutoSpectral parameter list. Generate using
 #' `get.autospectral.param`
@@ -30,7 +28,7 @@ check.channels <- function( spectral.channels, asp ) {
   database.path <- system.file( "extdata", "cytometer_database.csv",
                                 package = "AutoSpectral" )
 
-  cytometers <- read.csv( database.path )
+  cytometers <- utils::read.csv( database.path )
 
   if ( asp$cytometer == "Aurora" ) {
     detectors <- cytometers$Aurora

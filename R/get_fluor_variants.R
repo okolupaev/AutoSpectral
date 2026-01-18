@@ -193,9 +193,9 @@ get.fluor.variants <- function(
       if ( nrow( neg.data ) > asp$gate.downsample.n.beads ) {
         set.seed( 42 )
         neg.idx <- sample( nrow( neg.data ), asp$gate.downsample.n.beads )
-        background <- apply( neg.data[ neg.idx, spectral.channel ], 2, median )
+        background <- apply( neg.data[ neg.idx, spectral.channel ], 2, stats::median )
       } else {
-        background <- apply( neg.data[ , spectral.channel ], 2, median )
+        background <- apply( neg.data[ , spectral.channel ], 2, stats::median )
       }
 
     } else {
@@ -205,11 +205,11 @@ get.fluor.variants <- function(
         # downsample if lots of events
         set.seed( 42 )
         neg.idx <- sample( neg.idx, asp$gate.downsample.n.beads )
-        background <- apply( pos.data[ neg.idx, spectral.channel ], 2, median )
+        background <- apply( pos.data[ neg.idx, spectral.channel ], 2, stats::median )
 
       } else if ( length( neg.idx ) > asp$min.cell.warning.n ) {
         # use selected data below threshold if moderate numbers of events
-        background <- apply( pos.data[ neg.idx, spectral.channel ], 2, median )
+        background <- apply( pos.data[ neg.idx, spectral.channel ], 2, stats::median )
       } else if ( nrow( pos.data ) < asp$min.cell.stop.n ) {
         warning( paste0( "Minimal data present in sample: ", fluor,
                          "Variation assessment not possible for this fluorophore." ) )
@@ -220,7 +220,7 @@ get.fluor.variants <- function(
           pos.data[ , peak.channel ], decreasing = FALSE
           )[ 1:( nrow( pos.data ) / 2 ) ]
         neg.selected <- pos.data[ idx.low, spectral.channel, drop = FALSE ]
-        background <- apply( neg.selected, 2, median )
+        background <- apply( neg.selected, 2, stats::median )
       }
     }
 

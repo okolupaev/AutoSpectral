@@ -9,8 +9,6 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_tile scale_fill_viridis_c theme_minimal
 #' @importFrom ggplot2 coord_fixed element_text labs ggsave
-#' @importFrom dplyr mutate %>%
-#' @importFrom tidyr pivot_longer
 #'
 #' @param spectra Data frame or matrix containing spectral data.
 #' @param filename Character string for the output file. Default is
@@ -33,14 +31,17 @@
 #'
 #' @export
 
-cosine.similarity.plot <- function( spectra,
-                                    filename = "autospectral_similarity_matrix",
-                                    title = NULL,
-                                    output.dir = "figure_similarity_heatmap",
-                                    figure.width = 8, figure.height = 6,
-                                    color.palette = "viridis",
-                                    show.legend = TRUE,
-                                    save = TRUE ) {
+cosine.similarity.plot <- function(
+    spectra,
+    filename = "autospectral_similarity_matrix",
+    title = NULL,
+    output.dir = "figure_similarity_heatmap",
+    figure.width = 8,
+    figure.height = 6,
+    color.palette = "viridis",
+    show.legend = TRUE,
+    save = TRUE
+  ) {
 
   if ( !is.null( title ) )
     similarity.heatmap.filename <- paste0( title, "_", filename, ".jpg" )
@@ -52,28 +53,49 @@ cosine.similarity.plot <- function( spectra,
 
   # calculations
   similarity.matrix <- cosine.similarity( spectra )
-
   condition.number <- calculate.condition.number( spectra )
 
-  # reorganization
+  # data.frame for plotting
   similarity.df <- as.data.frame( similarity.matrix )
 
-  similarity.df <- similarity.df %>%
-    mutate( Fluor1 = factor( rownames( similarity.df ),
-                             levels = rownames( similarity.df ) ) ) %>%
-    tidyr::pivot_longer( cols = -Fluor1, names_to = "Fluor2", values_to = "value" ) %>%
-    mutate( Fluor2 = factor( Fluor2, levels = rev( colnames( similarity.matrix ) ) ) )
+  # pivot longer manually
+  similarity.df.long <- data.frame(
+    Fluor1 = rep(
+      rownames(similarity.df),
+      each = ncol(similarity.df)
+    ),
+    Fluor2 = rep(
+      colnames(similarity.df),
+      times = nrow(similarity.df)
+    ),
+    value = as.vector(t(similarity.df)),
+    stringsAsFactors = FALSE
+  )
+
+  # set factor levels for plotting
+  similarity.df.long$Fluor1 <- factor(
+    similarity.df.long$Fluor1,
+    levels = rownames( similarity.df )
+  )
+
+  similarity.df.long$Fluor2 <- factor(
+    similarity.df.long$Fluor2,
+    levels = rev(colnames(similarity.matrix))
+  )
 
   # plotting
   similarity.heatmap <- ggplot(
-    similarity.df, aes( Fluor1, Fluor2, fill = value ) ) +
+    similarity.df.long,
+    aes( Fluor1, Fluor2, fill = value ) ) +
     geom_tile() +
     scale_fill_viridis_c( option = color.palette ) +
     theme_minimal() +
     coord_fixed( ratio = 1 ) +
     theme( axis.text.x = element_text( angle = 45, hjust = 1 ) ) +
-    labs( x = paste( "Condition Number", condition.number ),
-          y = NULL, fill = "Cosine Similarity" )
+    labs(
+      x = paste( "Condition Number", condition.number ),
+      y = NULL, fill = "Cosine Similarity"
+    )
 
   if ( !show.legend )
     similarity.heatmap <- similarity.heatmap + theme( legend.position = "none" )
@@ -86,6 +108,5 @@ cosine.similarity.plot <- function( spectra,
       )
   else
     return( similarity.heatmap )
-
 
 }

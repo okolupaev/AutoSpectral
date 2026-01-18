@@ -6,7 +6,6 @@
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous theme_bw theme
 #' @importFrom ggplot2 margin element_line element_text element_rect element_blank
 #' @importFrom flowWorkspace flowjo_biexp
-#' @importFrom scales trans_new
 #' @importFrom scattermore geom_scattermore
 #'
 #' @param plot.data A matrix or dataframe containing the flow cytometry data to
@@ -51,17 +50,27 @@
 #'
 #' @export
 
-create.biplot <- function( plot.data, x.dim, y.dim, asp,
-                           x.lab = NULL, y.lab = NULL,
-                           x.min = -5000, x.max = asp$expr.data.max,
-                           y.min = -5000, y.max = asp$expr.data.max,
-                           x.width.basis = -1000,
-                           y.width.basis = -1000,
-                           max.points = 1e5,
-                           color.palette = "rainbow",
-                           save = TRUE,
-                           title = NULL, output.dir = NULL,
-                           width = 5, height = 5 ) {
+create.biplot <- function(
+    plot.data,
+    x.dim,
+    y.dim,
+    asp,
+    x.lab = NULL,
+    y.lab = NULL,
+    x.min = -5000,
+    x.max = asp$expr.data.max,
+    y.min = -5000,
+    y.max = asp$expr.data.max,
+    x.width.basis = -1000,
+    y.width.basis = -1000,
+    max.points = 1e5,
+    color.palette = "rainbow",
+    save = TRUE,
+    title = NULL,
+    output.dir = NULL,
+    width = 5,
+    height = 5
+  ) {
 
   # check for x.dim, y.dim in colnames
   stopifnot( x.dim %in% colnames( plot.data ) & y.dim %in% colnames( plot.data ) )
@@ -80,13 +89,17 @@ create.biplot <- function( plot.data, x.dim, y.dim, asp,
   )
 
   # check inputs
-  args <- list( x.min, x.max, y.min, y.max,
-               x.width.basis, y.width.basis,
-               max.points, width, height )
+  args <- list(
+    x.min, x.max, y.min, y.max,
+    x.width.basis, y.width.basis,
+    max.points, width, height
+  )
 
-  arg.names <- c( "x.min", "x.max", "y.min", "y.max",
-                 "x.width.basis", "y.width.basis",
-                 "max.points", "width", "height" )
+  arg.names <- c(
+    "x.min", "x.max", "y.min", "y.max",
+    "x.width.basis", "y.width.basis",
+    "max.points", "width", "height"
+  )
 
   for ( i in seq_along( args ) ) {
     if ( !is.numeric( args[[ i ]] ) ) {
@@ -94,6 +107,13 @@ create.biplot <- function( plot.data, x.dim, y.dim, asp,
     }
   }
 
+  ### The FlowJo Biexponential transformation caps out at -1000 for the width
+  # parameter in both FlowJo and in the R implementation in flowWorkspace. This
+  # is inadequate for a lot of spectral flow data. As a crude work-around, we can
+  # use any "excess" width basis to feed into modifying the number of positive log
+  # decades used in the transformation, which has a (sort of) similar effect.
+  # At some point, this needs to be implemented in C or C++ with a full range of
+  # width bases, but that's beyond me at the moment.
   if ( x.width.basis < -1000 ) {
     x.excess.width.basis <- x.width.basis + 1000
     x.pos.log.delta <- log10( abs( x.excess.width.basis ) )
@@ -139,13 +159,6 @@ create.biplot <- function( plot.data, x.dim, y.dim, asp,
     neg = asp$default.transformation.param$neg,
     widthBasis = x.width.basis,
     inverse = FALSE )
-  biexp.inverse.x <- flowWorkspace::flowjo_biexp(
-    channelRange = asp$default.transformation.param$length,
-    maxValue = x.max,
-    pos = x.pos.log,
-    neg = asp$default.transformation.param$neg,
-    widthBasis = x.width.basis,
-    inverse = TRUE )
 
   biexp.transform.y <- flowWorkspace::flowjo_biexp(
     channelRange = asp$default.transformation.param$length,
@@ -154,33 +167,16 @@ create.biplot <- function( plot.data, x.dim, y.dim, asp,
     neg = asp$default.transformation.param$neg,
     widthBasis = y.width.basis,
     inverse = FALSE )
-  biexp.inverse.y <- flowWorkspace::flowjo_biexp(
-    channelRange = asp$default.transformation.param$length,
-    maxValue = y.max,
-    pos = y.pos.log,
-    neg = asp$default.transformation.param$neg,
-    widthBasis = y.width.basis,
-    inverse = TRUE )
 
-  plot.biexp.transform.x <- scales::trans_new(
-    name = "biexp",
-    transform = biexp.transform.x,
-    inverse = biexp.inverse.x
-  )
-  plot.biexp.transform.y <- scales::trans_new(
-    name = "biexp",
-    transform = biexp.transform.y,
-    inverse = biexp.inverse.y
-  )
-
-  # transform data
-  plot.data$x.trans <- plot.biexp.transform.x$transform( plot.data$x )
-  plot.data$y.trans <- plot.biexp.transform.y$transform( plot.data$y )
-
-  # plot
-  biplot <- ggplot( plot.data, aes( x = x.trans, y = y.trans ) ) +
+  # create main plot
+  biplot <- ggplot(
+    plot.data,
+    aes(
+      x = biexp.transform.x( x ),
+      y = biexp.transform.y( y )
+    )
+  ) +
     geom_scattermore(
-      aes( x = x.trans, y = y.trans ),
       pointsize = asp$figure.gate.point.size,
       alpha = 1,
       na.rm = TRUE
@@ -192,20 +188,24 @@ create.biplot <- function( plot.data, x.dim, y.dim, asp,
       na.rm = TRUE ) +
     scale_x_continuous(
       name = x.lab,
-      breaks = plot.biexp.transform.x$transform( x.breaks ),
-      limits = plot.biexp.transform.x$transform( x.limits ),
+      breaks = biexp.transform.x( x.breaks ),
+      limits = biexp.transform.x( x.limits ),
       labels = x.axis.labels
     ) +
     scale_y_continuous(
       name = y.lab,
-      breaks = plot.biexp.transform.y$transform( y.breaks ),
-      limits = plot.biexp.transform.y$transform( y.limits ),
+      breaks = biexp.transform.y( y.breaks ),
+      limits = biexp.transform.y( y.limits ),
       labels = y.axis.labels
     ) +
     theme_bw() +
     theme(
-      plot.margin = margin( asp$figure.margin, asp$figure.margin,
-                           asp$figure.margin, asp$figure.margin ),
+      plot.margin = margin(
+        asp$figure.margin,
+        asp$figure.margin,
+        asp$figure.margin,
+        asp$figure.margin
+      ),
       legend.position = "none",
       axis.ticks = element_line( linewidth = asp$figure.panel.line.size ),
       axis.text = element_text( size = asp$figure.axis.text.size ),
@@ -216,17 +216,24 @@ create.biplot <- function( plot.data, x.dim, y.dim, asp,
     )
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+
+  # set color palette on plot
   if ( color.palette %in% virids.colors ) {
     biplot <- biplot +
       scale_fill_viridis_c( option = color.palette )
   } else {
     biplot <- biplot +
-      scale_fill_gradientn( colours = asp$density.palette.base.color,
-                            values = asp$ribbon.scale.values )
+      scale_fill_gradientn(
+        colours = asp$density.palette.base.color,
+        values = asp$ribbon.scale.values
+      )
   }
 
+  # save or return the plot
   if ( save )
     ggsave( file.path( output.dir, sprintf( "%s.jpg", title ) ),
             plot = biplot,

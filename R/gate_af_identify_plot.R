@@ -14,7 +14,6 @@
 #' @importFrom ggplot2 guide_colorbar
 #' @importFrom scattermore geom_scattermore
 #' @importFrom fields interp.surface
-#' @importFrom rlang .data
 #'
 #' @param gate.data Matrix containing autofluorescence data points.
 #' @param samp Sample identifier.
@@ -62,7 +61,7 @@ gate.af.identify.plot <- function( gate.data, samp, gate.region,
   y.breaks <- round( seq( y.min, y.max, length.out = 10 ) )
 
   gate.plot <- suppressWarnings(
-    ggplot( gate.data.ggp, aes( .data$x, .data$y ) ) +
+    ggplot( gate.data.ggp, aes( x, y ) ) +
       geom_scattermore(
         pointsize = 1.2 * asp$figure.gate.point.size,
         alpha = 1, na.rm = TRUE ) +
@@ -83,7 +82,7 @@ gate.af.identify.plot <- function( gate.data, samp, gate.region,
         labels = y.breaks,
         limits = c( y.min, y.max ),
         expand = expansion( asp$af.figure.gate.scale.expand ) ) +
-      geom_path( aes( .data$x, .data$y, color = NULL ),
+      geom_path( aes( x, y, color = NULL ),
                  data = gate.region, linewidth = asp$figure.gate.line.size ) +
       theme_bw() +
       theme( plot.margin = margin(
@@ -100,15 +99,21 @@ gate.af.identify.plot <- function( gate.data, samp, gate.region,
   )
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+
+  # set color palette on plot
   if ( color.palette %in% virids.colors ) {
     gate.plot <- gate.plot +
       scale_fill_viridis_c( option = color.palette )
   } else {
     gate.plot <- gate.plot +
       scale_fill_gradientn(
-        colours = asp$density.palette.base.color, values = asp$ribbon.scale.values )
+        colours = asp$density.palette.base.color,
+        values = asp$ribbon.scale.values
+      )
   }
 
   suppressWarnings(

@@ -28,13 +28,13 @@
 #' the variation in spectra. Up to `n.cells` cells will be selected as positive
 #' events in the peak channel for each fluorophore, above the 99.5th percentile
 #' level in the unstained sample.
-#' @param som.dim Numeric, default `10`. Number of x and y dimensions to use in
+#' @param som.dim Numeric, default `7`. Number of x and y dimensions to use in
 #' the SOM for clustering the spectral variation. The number of spectra returned
-#' for each fluorophore will increase with the quadratic of `som.dim`, so for 10,
-#' you will get up to 100 variants. Increasing the SOM dimensions further does
+#' for each fluorophore will increase with the quadratic of `som.dim`, so for 7,
+#' you will get up to 49 variants. Increasing the SOM dimensions further does
 #' not help. Somewhere between 4 and 7 appears to be sufficient, but with the
-#' pruning of variants implemented in `unmix.autospectral()`, this is less
-#' important.
+#' pruning of variants implemented in `unmix.autospectral()` in v1.0.0, this is
+#' less important.
 #' @param figures Logical, controls whether the variation in spectra for each
 #' fluorophore is plotted in `output.dir`. Default is `TRUE`.
 #' @param output.dir File path to whether the figures and .rds data file will be
@@ -58,7 +58,7 @@ get.spectral.variants <- function(
     control.dir, control.def.file,
     asp, spectra, af.spectra,
     n.cells = 2000,
-    som.dim = 10,
+    som.dim = 7,
     figures = TRUE,
     output.dir = NULL,
     parallel = FALSE,

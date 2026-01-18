@@ -7,8 +7,6 @@
 #' iterative reweighted least squares (IRLS) and fallback methods for cells
 #' that fail to converge.
 #'
-#' @importFrom stats glm.fit glm.control poisson coef
-#'
 #' @param raw.data Matrix containing raw data to be unmixed.
 #' @param spectra Matrix containing spectra information.
 #' @param asp The AutoSpectral parameter list.
@@ -71,18 +69,18 @@ unmix.poisson <- function(
       # fit glm model with Poisson distribution using identity link function
       fit <- tryCatch(
         suppressWarnings(
-          glm.fit(
+          stats::glm.fit(
             spectra.t, raw.data.cell,
             start = unmixed.data.cell,
-            family = poisson( link = "identity" ),
-            control = glm.control( maxit = asp$rlm.iter.max ),
+            family = stats::poisson( link = "identity" ),
+            control = stats::glm.control( maxit = asp$rlm.iter.max ),
             intercept = FALSE
           )
         )
       )
 
       if ( !inherits( fit, "try-error" ) && fit$converged ) {
-        return( coef( fit ) )
+        return( stats::coef( fit ) )
       } else {
         return( unmixed.data.cell )
       }

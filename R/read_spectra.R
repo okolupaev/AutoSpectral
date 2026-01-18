@@ -7,8 +7,6 @@
 #' (fluorophores in rows, detectors in columns, first row is detector names,
 #' first column contains fluorophore names).
 #'
-#' @importFrom utils read.csv
-#'
 #' @param spectra.file File name for the spectra CSV file to be read.
 #' @param spectra.dir File path to the folder containing `spectra.file`. Default
 #' is `table_spectra`, where `AutoSpectral` saves the spectra files.
@@ -22,13 +20,15 @@
 #'
 #' @export
 
-read.spectra <- function( spectra.file,
-                          spectra.dir = "./table_spectra",
-                          remove.af = FALSE,
-                          af.param = "AF" ) {
+read.spectra <- function(
+    spectra.file,
+    spectra.dir = "./table_spectra",
+    remove.af = FALSE,
+    af.param = "AF"
+  ) {
 
   spectral.matrix <- as.matrix(
-    read.csv(
+    utils::read.csv(
       file.path( spectra.dir, spectra.file ),
       check.names = FALSE,
       row.names = 1

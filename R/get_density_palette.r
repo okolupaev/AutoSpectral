@@ -5,9 +5,6 @@
 #' @description
 #' Returns a good color palette for plotting cell density distribution.
 #'
-#' @importFrom grDevices colorRampPalette
-#' @importFrom stats ecdf
-#'
 #' @param dens A numeric vector representing the density distribution.
 #'
 #' @param asp The AutoSpectral parameter list.
@@ -17,9 +14,11 @@
 #'
 #' @export
 
-get.density.palette <- function( dens, asp )
-{
-    rainbow.palette <- colorRampPalette(
+get.density.palette <- function(
+    dens,
+    asp
+) {
+    rainbow.palette <- grDevices::colorRampPalette(
       asp$density.palette.base.color )( asp$density.palette.base.n )
 
     dens.range <- range( dens, na.rm = TRUE )
@@ -29,7 +28,7 @@ get.density.palette <- function( dens, asp )
       )
 
     density.palette.idx <- round(
-      ecdf( dens )( dens.grid ) * asp$density.palette.base.n
+      stats::ecdf( dens )( dens.grid ) * asp$density.palette.base.n
       )
 
     rainbow.palette[ density.palette.idx ]

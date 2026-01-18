@@ -8,12 +8,10 @@
 #' use the function directly, pass data to `data.list` in the form of a named
 #' list of matrices or data.frames.
 #'
-#' @importFrom tidyr pivot_longer
 #' @importFrom ggplot2 ggplot aes scale_y_continuous geom_bin2d facet_wrap xlab
 #' @importFrom ggplot2 ylab scale_fill_gradientn theme_minimal theme element_text
 #' @importFrom ggplot2 element_blank ggsave scale_fill_viridis_c
 #' @importFrom flowWorkspace flowjo_biexp
-#' @importFrom scales trans_new
 #'
 #' @param pos.expr.data Internal argument for `clean.controls`. A matrix
 #' containing the positive expression data. Default is `NULL`.
@@ -69,7 +67,8 @@ spectral.ribbon.plot <- function(
     data.list = NULL,
     af = FALSE,
     plot.width = 15,
-    plot.height = 10 ) {
+    plot.height = 10
+) {
 
 
   # for user-provided data: list of data.frames/matrices to `data.list`
@@ -126,7 +125,7 @@ spectral.ribbon.plot <- function(
         figure.dir <- asp$figure.spectral.ribbon.dir
 
     } else {
-      # Intrusive AF event cleaning
+      # intrusive AF event cleaning
       data.frames <- list(
         pos.expr.data[ , spectral.channel, drop = FALSE ],
         neg.expr.data[ , spectral.channel, drop = FALSE ],
@@ -159,18 +158,27 @@ spectral.ribbon.plot <- function(
 
   # rearrange
   ribbon.plot.data <- do.call( rbind, data.frames )
-  ribbon.plot.data$group <- factor( ribbon.plot.data$group, levels = factor.names )
-
-  ribbon.plot.long <- tidyr::pivot_longer(
-    ribbon.plot.data,
-    cols = -group,
-    names_to = "channel",
-    values_to = "value"
+  ribbon.plot.data$group <- factor(
+    ribbon.plot.data$group,
+    levels = factor.names
   )
-  ribbon.plot.long$channel <- factor( ribbon.plot.long$channel,
-                                      levels = unique( ribbon.plot.long$channel ) )
 
-  # setting scales
+  # shift to long format for plotting
+  cols <- setdiff( names( ribbon.plot.data ), "group" )
+
+  ribbon.plot.long <- data.frame(
+    group   = rep( ribbon.plot.data$group, times = length( cols ) ),
+    channel = rep( cols, each = nrow( ribbon.plot.data ) ),
+    value   = unlist( ribbon.plot.data[ cols ], use.names = FALSE ),
+    row.names = NULL
+  )
+
+  ribbon.plot.long$channel <- factor(
+    ribbon.plot.long$channel,
+    levels = unique( ribbon.plot.long$channel )
+  )
+
+  # setting scales and transformation
   ribbon.breaks <- asp$ribbon.breaks
   ribbon.labels <- sapply( ribbon.breaks, function( x ) {
     if ( x == 0 ) "0" else parse( text = paste0( "10^", log10( abs( x ) ) ) )
@@ -185,27 +193,19 @@ spectral.ribbon.plot <- function(
     widthBasis   = asp$default.transformation.param$width,
     inverse      = FALSE
   )
-  biexp.inverse <- flowWorkspace::flowjo_biexp(
-    channelRange = asp$default.transformation.param$length,
-    maxValue     = asp$default.transformation.param$max.range,
-    pos          = asp$default.transformation.param$pos,
-    neg          = asp$default.transformation.param$neg,
-    widthBasis   = asp$default.transformation.param$width,
-    inverse      = TRUE
-  )
-  plot.biexp.transform <- scales::trans_new(
-    name = "biexp",
-    transform = biexp.transform,
-    inverse = biexp.inverse
-  )
 
   # create plot
   ribbon.plot <- suppressWarnings(
-    ggplot( ribbon.plot.long, aes( channel, value ) ) +
+    ggplot(
+      ribbon.plot.long,
+      aes(
+        channel,
+        biexp.transform( value )
+      )
+    ) +
       scale_y_continuous(
-        trans = plot.biexp.transform,
-        breaks = ribbon.breaks,
-        limits = ribbon.limits,
+        limits = biexp.transform(ribbon.limits),
+        breaks = biexp.transform(ribbon.breaks),
         labels = ribbon.labels
       ) +
       geom_bin2d(
@@ -239,8 +239,10 @@ spectral.ribbon.plot <- function(
   )
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+    )
   if ( color.palette %in% virids.colors ) {
     ribbon.plot <- ribbon.plot +
       scale_fill_viridis_c( option = color.palette )

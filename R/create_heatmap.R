@@ -8,9 +8,6 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_tile scale_fill_viridis_c theme_minimal
 #' @importFrom ggplot2 coord_fixed element_text labs ggsave
-#' @importFrom dplyr mutate %>% filter
-#' @importFrom tidyr pivot_longer
-#' @importFrom rlang .data
 #'
 #' @param matrix Matrix or dataframe containing spectral data.
 #' @param number.labels Logical indicating whether to add number labels to
@@ -45,18 +42,22 @@
 #'
 #' @export
 
-create.heatmap <- function( matrix,
-                            number.labels = FALSE,
-                            title = NULL,
-                            legend.label = "heatmap",
-                            triangular = FALSE,
-                            plot.dir = NULL,
-                            fixed.scale = FALSE,
-                            scale.min = NULL, scale.max = NULL,
-                            color.palette = "viridis",
-                            show.legend = TRUE,
-                            figure.width = 8, figure.height = 6,
-                            save = TRUE ) {
+create.heatmap <- function(
+    matrix,
+    number.labels = FALSE,
+    title = NULL,
+    legend.label = "heatmap",
+    triangular = FALSE,
+    plot.dir = NULL,
+    fixed.scale = FALSE,
+    scale.min = NULL,
+    scale.max = NULL,
+    color.palette = "viridis",
+    show.legend = TRUE,
+    figure.width = 8,
+    figure.height = 6,
+    save = TRUE
+  ) {
 
   if ( !is.null( title ) )
     heatmap.filename <- paste( title, "heatmap.jpg" )
@@ -72,22 +73,40 @@ create.heatmap <- function( matrix,
   col.levels <- colnames( heatmap.df )
   heatmap.df$Fluor1 <- row.levels
 
-  heatmap.long <- heatmap.df %>%
-    pivot_longer( cols = -Fluor1, names_to = "Fluor2", values_to = "value" ) %>%
-    mutate( Fluor1 = factor( Fluor1, levels = row.levels ),
-            Fluor2 = factor( Fluor2, levels = col.levels ) )
+  # pivot longer
+  heatmap.long <- data.frame(
+    Fluor1 = rep( heatmap.df$Fluor1, times = ncol( heatmap.df ) - 1 ),
+    Fluor2 = rep( col.levels, each = nrow( heatmap.df ) ),
+    value  = as.vector( as.matrix( heatmap.df[, col.levels] ) ),
+    stringsAsFactors = FALSE
+  )
 
+  # convert to factors with original levels
+  heatmap.long$Fluor1 <- factor( heatmap.long$Fluor1, levels = row.levels )
+  heatmap.long$Fluor2 <- factor( heatmap.long$Fluor2, levels = col.levels )
+
+  # triangular or full heatmap, depending on user-input
   if ( triangular ) {
-    heatmap.long <- heatmap.long %>%
-      dplyr::filter( as.integer( Fluor1 ) <= as.integer( Fluor2 ) ) %>%
-      mutate( Fluor2 = factor( Fluor2, levels = rev( col.levels ) ) )
+    # keep only upper triangle (Fluor1 <= Fluor2)
+    keep <- as.integer( heatmap.long$Fluor1 ) <= as.integer( heatmap.long$Fluor2 )
+    heatmap.long <- heatmap.long[ keep, ]
+
+    # reverse Fluor2 levels for plotting
+    heatmap.long$Fluor2 <- factor(heatmap.long$Fluor2, levels = rev( col.levels ) )
   } else {
-    heatmap.long <- heatmap.long %>%
-      mutate( Fluor1 = factor( Fluor1, levels = rev( row.levels ) ) )
+    # full heatmap: reverse Fluor1 for plotting
+    heatmap.long$Fluor1 <- factor( heatmap.long$Fluor1, levels = rev( row.levels ) )
   }
 
   # plot and save
-  heatmap.plot <- ggplot( heatmap.long, aes( Fluor1, Fluor2, fill = value ) ) +
+  heatmap.plot <- ggplot(
+    heatmap.long,
+    aes(
+      Fluor1,
+      Fluor2,
+      fill = value
+      )
+    ) +
     geom_tile() +
     theme_classic() +
     coord_fixed( ratio = 1 ) +
@@ -96,17 +115,24 @@ create.heatmap <- function( matrix,
 
   if ( fixed.scale ) {
     heatmap.plot <- heatmap.plot +
-      scale_fill_viridis_c( option = color.palette,
-                            limits = c( scale.min, scale.max ) )
+      scale_fill_viridis_c(
+        option = color.palette,
+        limits = c( scale.min, scale.max ) )
   } else {
     heatmap.plot <- heatmap.plot +
       scale_fill_viridis_c( option = color.palette )
   }
 
   if ( number.labels ) {
+    heatmap.long$label <- round( heatmap.long$value, 2 )
+
     heatmap.plot <- heatmap.plot +
-      geom_text( aes( label = round( .data$value, 2 ) ),
-                 color = "white", size = 3 )
+      geom_text(
+        aes( x = Fluor1, y = Fluor2, label = label ),
+        data = heatmap.long,
+        color = "white",
+        size = 3
+      )
   }
 
   if ( !show.legend )

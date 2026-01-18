@@ -8,9 +8,6 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_path geom_point labs theme_minimal
 #' @importFrom ggplot2 element_text facet_wrap ggsave theme scale_color_viridis_d
-#' @importFrom tidyr pivot_longer
-#' @importFrom utils read.csv
-#' @importFrom stats setNames
 #'
 #' @param spectral.matrix Matrix or dataframe containing spectral data. This
 #' should be in format fluorophores x detectors. Row names will be used as the
@@ -42,19 +39,20 @@
 #' @return Saves the plot(s) as JPEG files in the specified directory.
 #' @export
 
-spectral.trace <- function( spectral.matrix,
-                            asp,
-                            title = "Fluorophore_Spectra",
-                            plot.dir = NULL,
-                            split.lasers = TRUE,
-                            figure.spectra.line.size = 1,
-                            figure.spectra.point.size = 1,
-                            color.palette = NULL,
-                            show.legend = TRUE,
-                            plot.width = NULL,
-                            plot.height = NULL,
-                            save = TRUE ) {
-
+spectral.trace <- function(
+    spectral.matrix,
+    asp,
+    title = "Fluorophore_Spectra",
+    plot.dir = NULL,
+    split.lasers = TRUE,
+    figure.spectra.line.size = 1,
+    figure.spectra.point.size = 1,
+    color.palette = NULL,
+    show.legend = TRUE,
+    plot.width = NULL,
+    plot.height = NULL,
+    save = TRUE
+  ) {
 
   # get excitation laser based on peak emission detector
   peak.detectors <- colnames( spectral.matrix )[ max.col( spectral.matrix ) ]
@@ -75,37 +73,37 @@ spectral.trace <- function( spectral.matrix,
     split.lasers <- FALSE
   }
 
-  cytometer.database <- read.csv( data.path )
+  cytometer.database <- utils::read.csv( data.path )
   cytometer.database[ cytometer.database == "" ] <- NA
 
   if ( asp$cytometer == "Aurora" ) {
     if ( asp$cytometer.version == "NL" ) {
-      detectors <- setNames(
+      detectors <- stats::setNames(
         cytometer.database$NorthernLights, cytometer.database$NorthernLights_laser )
     } else {
-      detectors <- setNames(
+      detectors <- stats::setNames(
         cytometer.database$Aurora, cytometer.database$Aurora_laser )
     }
   } else if ( asp$cytometer == "ID7000" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$ID7000, cytometer.database$ID7000_laser )
   } else if ( asp$cytometer == "FACSDiscover A8" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$Discover, cytometer.database$Discover_laser )
   } else if ( asp$cytometer == "FACSDiscover S8" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$Discover, cytometer.database$Discover_laser )
   } else if ( asp$cytometer == "Opteon" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$Opteon, cytometer.database$Opteon_laser )
   } else if ( asp$cytometer == "Mosaic" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$Mosaic, cytometer.database$Mosaic_laser )
   } else if ( asp$cytometer == "Xenith" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$Xenith, cytometer.database$Xenith_laser )
   } else if ( asp$cytometer == "Symphony" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       cytometer.database$A5SE, cytometer.database$A5SE_laser )
   } else {
     warning( "Unsupported cytometer" )
@@ -114,6 +112,7 @@ spectral.trace <- function( spectral.matrix,
 
   detectors <- detectors[ !is.na( detectors ) ]
 
+  # organize fluorophores by excitation laser
   laser.order <- unique( names( detectors ) )
 
   laser.idx <- match( peak.detectors, detectors )
@@ -125,25 +124,36 @@ spectral.trace <- function( spectral.matrix,
     levels = laser.order
   )
 
+  # set dimensions automatically
   if ( is.null( plot.width ) )
     plot.width <- max( ( ( ncol( fluor.spectra.plotting ) - 1 ) / 64 * 12 ), 3 )
 
   if ( is.null( plot.height ) )
     plot.height <- 5 + round( nrow( fluor.spectra.plotting ) / 8, 0 )
 
-  fluor.spectra.long <- tidyr::pivot_longer(
-    fluor.spectra.plotting,
-    -c( Fluorophore, Laser ),
-    names_to = "Detector",
-    values_to = "Intensity"
+  # pivot to long format
+  pivot.cols <- setdiff(
+    colnames( fluor.spectra.plotting ),
+    c( "Fluorophore", "Laser" )
   )
 
+  # Pivot longer manually
+  fluor.spectra.long <- data.frame(
+    Fluorophore = rep( fluor.spectra.plotting$Fluorophore, times = length( pivot.cols ) ),
+    Laser       = rep( fluor.spectra.plotting$Laser, times = length( pivot.cols ) ),
+    Detector    = rep( pivot.cols, each = nrow( fluor.spectra.plotting ) ),
+    Intensity   = as.vector( as.matrix( fluor.spectra.plotting[ , pivot.cols ] ) ),
+    stringsAsFactors = FALSE
+  )
+
+  # set detectors as factor for plotting
   fluor.spectra.long$Detector <-  factor(
     fluor.spectra.long$Detector,
     levels = unique( fluor.spectra.long$Detector ),
     ordered = TRUE
   )
 
+  # create main plot
   spectra.plot <- ggplot(
     fluor.spectra.long,
     aes(
@@ -162,6 +172,7 @@ spectral.trace <- function( spectral.matrix,
     theme( axis.text.x = element_text( angle = 45, hjust = 1 )  ) +
     theme( legend.position = "bottom" )
 
+  # set the color palette on the plot
   if ( !is.null( color.palette ) )
     spectra.plot <- spectra.plot +
       scale_color_viridis_d( option = color.palette )
@@ -178,6 +189,7 @@ spectral.trace <- function( spectral.matrix,
     return( spectra.plot )
   }
 
+  # split into facets per laser excitation, if desired
   if ( split.lasers ) {
     # get number of lasers used
     laser.n <- length( unique( fluor.spectra.plotting$Laser ) )
@@ -212,6 +224,7 @@ spectral.trace <- function( spectral.matrix,
     if ( !show.legend )
       spectra.plot.split <- spectra.plot.split + theme( legend.position = "none" )
 
+    # save or return the plot
     if ( save ) {
       ggsave(
         file.path( plot.dir, sprintf( "%s by laser.jpg", title ) ),

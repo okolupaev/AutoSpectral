@@ -14,7 +14,6 @@
 #' not help much on Windows unless >10 cores are available.
 #'
 #' @importFrom flowCore read.FCS exprs
-#' @importFrom utils read.csv
 #'
 #' @param control.dir File path to the single-stained control FCS files.
 #' @param control.def.file CSV file defining the single-color control file names,
@@ -64,14 +63,16 @@
 #'
 #' @export
 
-define.flow.control <- function( control.dir,
-                                 control.def.file,
-                                 asp,
-                                 gate = TRUE,
-                                 parallel = FALSE,
-                                 verbose = TRUE,
-                                 threads = NULL )
-{
+define.flow.control <- function(
+    control.dir,
+    control.def.file,
+    asp,
+    gate = TRUE,
+    parallel = FALSE,
+    verbose = TRUE,
+    threads = NULL
+  ) {
+
   if ( verbose ) message( "\033[34mChecking control file for errors \033[0m" )
 
   check.control.file( control.dir, control.def.file, asp, strict = TRUE )
@@ -82,7 +83,7 @@ define.flow.control <- function( control.dir,
   if ( verbose ) message( "\033[34mReading control information \033[0m" )
 
   # read control info
-  control.table <- read.csv(
+  control.table <- utils::read.csv(
     control.def.file,
     stringsAsFactors = FALSE,
     strip.white = TRUE

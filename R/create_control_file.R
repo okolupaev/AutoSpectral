@@ -12,8 +12,6 @@
 #' "No Match" results manually. You will need to set universal negatives manually.
 #' You will need to add marker names manually.
 #'
-#' @importFrom stats setNames
-#'
 #' @param control.dir file path to the single stained control fcs files
 #' @param asp The AutoSpectral parameter list. Generate using
 #' `get.autospectral.param`
@@ -73,32 +71,32 @@ create.control.file <- function( control.dir, asp ){
   # set corresponding peak detectors based on cytometer
   if ( asp$cytometer == "Aurora" ) {
     if ( asp$cytometer.version == "NL" ) {
-      detectors <- setNames(
+      detectors <- stats::setNames(
         fluorophore.database$channel.NL, fluorophore.database$fluorophore )
     } else {
-      detectors <- setNames(
+      detectors <- stats::setNames(
         fluorophore.database$channel.Aurora, fluorophore.database$fluorophore )
     }
   } else if ( asp$cytometer == "ID7000" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.ID7000, fluorophore.database$fluorophore )
   } else if ( asp$cytometer == "FACSDiscover A8" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.s8, fluorophore.database$fluorophore )
   } else if ( asp$cytometer == "FACSDiscover S8" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.s8, fluorophore.database$fluorophore )
   } else if ( asp$cytometer == "Opteon" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.opteon, fluorophore.database$fluorophore )
   } else if ( asp$cytometer == "Mosaic" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.mosaic, fluorophore.database$fluorophore )
   } else if ( asp$cytometer == "Xenith" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.xenith, fluorophore.database$fluorophore )
   } else if ( asp$cytometer == "Symphony" ) {
-    detectors <- setNames(
+    detectors <- stats::setNames(
       fluorophore.database$channel.A5SE, fluorophore.database$fluorophore )
   } else {
     stop( "Unsupported cytometer" )

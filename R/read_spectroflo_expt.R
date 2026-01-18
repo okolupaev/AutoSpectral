@@ -7,7 +7,6 @@
 #' matrix that was used for the unmixing.
 #'
 #' @importFrom xml2 read_xml xml_find_all xml_text
-#' @importFrom utils write.csv
 #' @importFrom flowCore read.FCSheader
 #'
 #' @param expt.file File name and path to the .Expt file to be read.
@@ -25,29 +24,32 @@
 #'
 #' @export
 
-read.spectroflo.expt <- function( expt.file, output.dir,
-                                  output.filename = "SpectroFlo_spillover_matrix.csv",
-                                  fcs.file = NULL ) {
+read.spectroflo.expt <- function(
+    expt.file, output.dir,
+    output.filename = "SpectroFlo_spillover_matrix.csv",
+    fcs.file = NULL
+  ) {
 
   # read SpectroFlo .Expt file (XML format)
   expt <- xml2::read_xml( expt.file )
 
   # find the spillover value nodes
-  vector.nodes <- xml_find_all( expt, ".//*[local-name() = '_SpilloverVectorArea']" )
+  vector.nodes <- xml2::xml_find_all(
+    expt,
+    ".//*[local-name() = '_SpilloverVectorArea']"
+  )
 
   spillover.list <- lapply( vector.nodes, function( node ) {
-    float.nodes <- xml_find_all( node, ".//*[local-name()='float']" )
+    float.nodes <- xml2::xml_find_all( node, ".//*[local-name()='float']" )
     as.numeric( xml_text( float.nodes ) )
   } )
 
   # convert to a matrix
   spillover.matrix <- do.call( rbind, spillover.list )
 
-  # spillover.matrix <- t( apply( spillover.matrix, 1, function( x ) x / max( x ) ) )
-
   # find the associated fluorophore names
-  url.nodes <- xml_find_all( expt, ".//*[local-name() = '_Url']" )
-  url.paths <- xml_text( url.nodes )
+  url.nodes <- xml2::xml_find_all( expt, ".//*[local-name() = '_Url']" )
+  url.paths <- xml2::xml_text( url.nodes )
 
   # extract fluorophore names from file names (before "_Controls.fcs")
   fluor.names <- gsub( ".*\\\\|_Controls\\.fcs.*", "", url.paths )
@@ -76,7 +78,7 @@ read.spectroflo.expt <- function( expt.file, output.dir,
     colnames( spillover.matrix ) <- detector.names
   }
 
-  write.csv(
+  utils::write.csv(
     spillover.matrix,
     file.path( output.dir, output.filename )
   )

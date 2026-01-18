@@ -55,10 +55,10 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
   if ( !use.clean.expr ) {
 
     message(
-      paste( "\033[34m",
-             "Using original `dirty` expression data to get spectra ",
-             "\033[0m"
-             )
+      paste0( "\033[34m",
+              "Using original `dirty` expression data to get spectra",
+              "\033[0m"
+      )
     )
 
     # identify data corresponding to fluorophores (not negatives)
@@ -128,7 +128,7 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
     # loop over all of these
     marker.spectra <- lapply( fluorophore.samples, function( samp ) {
 
-      message( paste0("\033[32m", "Processing ", samp, "\033[0m" ) )
+      message( paste0( "\033[32m", "Processing ", samp, "\033[0m" ) )
 
       peak.channel <- fluorophore.channels[ fluorophore.samples == samp ]
 
@@ -231,7 +231,7 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
   # save the spectra as a CSV file
   if ( !is.null( asp$table.spectra.dir ) ) {
-    write.csv(
+    utils::write.csv(
       fluorophore.spectra.plot,
       file = file.path(
         asp$table.spectra.dir,
@@ -261,7 +261,8 @@ get.fluorophore.spectra <- function( flow.control, asp, use.clean.expr = TRUE,
 
     print( similarity.qc )
 
-    message( "\033[31mSimilarity over 0.95 detected for one or more pairs of fluorophores.
+    message(
+    "\033[31mSimilarity over 0.95 detected for one or more pairs of fluorophores.
 
     Check the printed table in the console for problematic combinations.
     If both Fluor1 and Fluor2 are fluorophores,

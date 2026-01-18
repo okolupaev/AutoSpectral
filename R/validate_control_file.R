@@ -6,7 +6,6 @@
 #' setup for AutoSpectral conforms to expectations and follows rules required for
 #' successful running of AutoSpectral.
 #'
-#' @importFrom utils read.csv
 #' @importFrom flowCore read.FCSheader
 #'
 #' @param control.dir File path to the single-stained control FCS files.
@@ -45,7 +44,7 @@ validate.control.file <- function( control.dir, control.def.file, asp ) {
   }
 
   ## ---------- load table ----------
-  ct <- read.csv(
+  ct <- utils::read.csv(
     control.def.file,
     stringsAsFactors = FALSE,
     strip.white = TRUE

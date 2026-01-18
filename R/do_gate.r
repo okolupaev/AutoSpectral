@@ -241,15 +241,15 @@ do.gate <- function( gate.data, viability.gate, large.gate,
   if ( default.gate.param$region.auto )
   {
     # set region from target maximum found in bound
-    gate.bound.density.max.x.median <- median( gate.data[
+    gate.bound.density.max.x.median <- stats::median( gate.data[
       gate.bound.density.max.data.idx, 1 ] )
-    gate.bound.density.max.x.mad <- mad(
+    gate.bound.density.max.x.mad <- stats::mad(
       gate.data[ gate.bound.density.max.data.idx, 1 ],
       center = gate.bound.density.max.x.median )
 
-    gate.bound.density.max.y.median <- median( gate.data[
+    gate.bound.density.max.y.median <- stats::median( gate.data[
       gate.bound.density.max.data.idx, 2 ] )
-    gate.bound.density.max.y.mad <- mad(
+    gate.bound.density.max.y.mad <- stats::mad(
       gate.data[ gate.bound.density.max.data.idx, 2 ],
       center = gate.bound.density.max.y.median )
 

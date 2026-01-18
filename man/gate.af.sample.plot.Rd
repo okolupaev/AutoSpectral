@@ -2,7 +2,7 @@
 % Please edit documentation in R/gate_af_sample_plot.R
 \name{gate.af.sample.plot}
 \alias{gate.af.sample.plot}
-\title{Plot Gate Autofluorescence Sample}
+\title{Plot Autofluorescence Gates on Samples}
 \usage{
 gate.af.sample.plot(
   plot.data,
@@ -35,6 +35,5 @@ are the viridis color options: \code{magma}, \code{inferno}, \code{plasma}, \cod
 Saves the plot as a JPEG file in the specified directory.
 }
 \description{
-This function plots the gate autofluorescence sample, including upper and
-lower boundaries, using ggplot2 and other necessary packages.
+This function plots the autofluorescence exclusion gate on the sample(s).
 }

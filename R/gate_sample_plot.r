@@ -11,7 +11,6 @@
 #' @importFrom ggplot2 element_text element_rect margin expansion ggsave
 #' @importFrom ggplot2 stat_density_2d after_stat geom_path scale_fill_viridis_c
 #' @importFrom scattermore geom_scattermore
-#' @importFrom rlang .data
 #'
 #' @param samp Sample identifier.
 #' @param gate.data Matrix containing gate data points.
@@ -30,10 +29,16 @@
 #'
 #' @return Saves the plot as a JPEG file in the specified directory.
 
-gate.sample.plot <- function( samp, gate.data, gate.marker, gate.boundary,
-                              scatter.and.channel.label, control.type, asp,
-                              color.palette = "rainbow" )
-{
+gate.sample.plot <- function(
+    samp,
+    gate.data,
+    gate.marker,
+    gate.boundary,
+    scatter.and.channel.label,
+    control.type,
+    asp,
+    color.palette = "rainbow"
+  ) {
 
   gate.data.ggp <- data.frame(
     x = gate.data[ , 1 ],
@@ -54,7 +59,7 @@ gate.sample.plot <- function( samp, gate.data, gate.marker, gate.boundary,
   y.lab.idx <- which( scatter.and.channel.label == gate.marker[ 2 ] )
   y.lab <- names( scatter.and.channel.label[ y.lab.idx ] )
 
-  gate.plot <- ggplot( gate.data.ggp, aes( x = .data$x, y = .data$y ) ) +
+  gate.plot <- ggplot( gate.data.ggp, aes( x, y ) ) +
     geom_scattermore(
       pointsize = asp$figure.gate.point.size,
       alpha = 1, na.rm = TRUE
@@ -65,7 +70,7 @@ gate.sample.plot <- function( samp, gate.data, gate.marker, gate.boundary,
       contour = TRUE,
       na.rm = TRUE ) +
     geom_path(
-      aes( x = .data$x, y = .data$y ),
+      aes( x, y ),
       data = gate.boundary.ggp,
       color = "black",
       linewidth = asp$figure.gate.line.size
@@ -110,8 +115,12 @@ gate.sample.plot <- function( samp, gate.data, gate.marker, gate.boundary,
     )
 
   # color options
-  virids.colors <- c( "magma", "inferno", "plasma", "viridis", "cividis",
-                      "rocket", "mako", "turbo" )
+  virids.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+
+  # set the color palette on the plot
   if ( color.palette %in% virids.colors ) {
     gate.plot <- gate.plot +
       scale_fill_viridis_c( option = color.palette )

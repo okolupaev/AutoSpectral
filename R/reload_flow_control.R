@@ -6,7 +6,6 @@
 #' This function reloads essential information from control files to permit
 #' rapid unmixing at a later date, without recalculating spectra or gates.
 #'
-#' @importFrom utils read.csv
 #' @importFrom flowCore read.FCS
 #'
 #' @param control.dir file path to the single stained control fcs files
@@ -20,10 +19,14 @@
 #'
 #' @export
 
-reload.flow.control <- function( control.dir, control.def.file, asp ) {
+reload.flow.control <- function(
+    control.dir,
+    control.def.file,
+    asp
+  ) {
 
   # read control info
-  control.table <- read.csv(
+  control.table <- utils::read.csv(
     control.def.file,
     stringsAsFactors = FALSE,
     strip.white = TRUE

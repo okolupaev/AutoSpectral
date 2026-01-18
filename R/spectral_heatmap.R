@@ -8,8 +8,6 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_tile scale_fill_viridis_c theme_classic
 #' @importFrom ggplot2 coord_fixed element_text labs ggsave theme
-#' @importFrom tidyr pivot_longer
-#' @importFrom dplyr mutate %>%
 #'
 #' @param spectra Matrix or dataframe containing spectral data
 #' format: fluorophores x detectors.
@@ -47,6 +45,7 @@ spectral.heatmap <- function(
     plot.height = NULL
   ) {
 
+  # set filename and saving folder
   if ( !is.null( title ) )
     heatmap.filename <- paste( title, "spectral_heatmap.jpg" )
   else
@@ -55,29 +54,45 @@ spectral.heatmap <- function(
   if ( is.null( plot.dir ) )
     plot.dir <- getwd()
 
+  # convert to dataframe for plotting
   heatmap.df <- data.frame( spectra, check.names = FALSE )
 
+  # automatically adjust dimensions
   if ( is.null( plot.width ) )
     plot.width <- max( ( ( ncol( heatmap.df ) - 1 ) / 64 * 12 ), 3 )
   if ( is.null( plot.height ) )
     plot.height <- 5 + round( nrow( heatmap.df ) / 8, 0 )
 
+  # restructure data for plotting
   row.levels <- rownames( heatmap.df )
   col.levels <- colnames( heatmap.df )
   heatmap.df$Fluorophore <- row.levels
 
-  heatmap.long <- heatmap.df %>%
-    tidyr::pivot_longer(
-      cols = -Fluorophore,
-      names_to = "Detector",
-      values_to = "value"
-    ) %>%
-    dplyr::mutate(
-      Fluorophore = factor( Fluorophore, levels = rev( row.levels ) ),
-      Detector = factor( Detector, levels = col.levels )
-    )
+  # pivot to long format
+  heatmap.long <- data.frame(
+    Fluorophore = rep(
+      heatmap.df$Fluorophore,
+      times = ncol( heatmap.df ) - 1 ),
+    Detector    = rep(
+      colnames( heatmap.df )[ colnames( heatmap.df ) != "Fluorophore" ],
+      each = nrow( heatmap.df ) ),
+    value       = as.vector(
+      as.matrix( heatmap.df[ , colnames( heatmap.df ) != "Fluorophore" ] ) ),
+    stringsAsFactors = FALSE
+  )
 
-  heatmap.plot <- ggplot( heatmap.long, aes( Detector, Fluorophore, fill = value ) ) +
+  # convert to factors
+  heatmap.long$Fluorophore <- factor( heatmap.long$Fluorophore, levels = rev( row.levels ) )
+  heatmap.long$Detector    <- factor( heatmap.long$Detector, levels = col.levels )
+
+  heatmap.plot <- ggplot(
+    heatmap.long,
+    aes(
+      Detector,
+      Fluorophore,
+      fill = value
+      )
+    ) +
     geom_tile() +
     theme_classic() +
     coord_fixed( ratio = 1 ) +

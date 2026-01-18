@@ -8,7 +8,6 @@
 #' Reverts to a standard linear model in case of no convergence.
 #'
 #' @importFrom MASS rlm
-#' @importFrom stats lm
 #'
 #' @param x.data A vector containing the predictor variable data.
 #' @param y.data A vector containing the response variable data.
@@ -23,12 +22,15 @@
 #'
 #' @export
 
+fit.robust.linear.model <-  function(
+    x.data,
+    y.data,
+    x.name,
+    y.name,
+    max.iter = 100,
+    fix.unmix = FALSE
+  ) {
 
-
-fit.robust.linear.model <-  function( x.data, y.data, x.name, y.name,
-                                      max.iter = 100,
-                                      fix.unmix = FALSE )
-{
   X.data.int <- cbind( 1, x.data )
   xy.model <- rlm( X.data.int, y.data, maxit = max.iter )
 
@@ -43,17 +45,18 @@ fit.robust.linear.model <-  function( x.data, y.data, x.name, y.name,
     } else {
       warning(
         sprintf( "WARNING: rlm of %s ~ %s did not converge - using ols instead\n",
-                 y.name, x.name ), file = stderr() )
+                 y.name, x.name ), file = stderr()
+        )
 
       xy.data <- data.frame( x = x.data, y = y.data )
 
-      xy.model <- lm( y ~ x, xy.data )
+      xy.model <- stats::lm( y ~ x, xy.data )
 
       xy.coef <- xy.model$coefficients
     }
 
   dimnames( xy.coef ) <- NULL
-  xy.coef
+  return( xy.coef )
 }
 
 

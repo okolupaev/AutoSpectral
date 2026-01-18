@@ -8,9 +8,7 @@
 #' identification of cells with similar AF profiles.
 #'
 #' @importFrom FlowSOM SOM
-#' @importFrom stats na.omit
 #' @importFrom flowCore read.FCS exprs
-#' @importFrom utils write.csv
 #'
 #' @param unstained.sample Path and file name for a unstained sample FCS file.
 #' The sample type and processing (protocol) method should match the fully
@@ -89,7 +87,7 @@ get.af.spectra <- function(
   )
   rownames( af.spectra ) <- paste0( "AF", 1:nrow( af.spectra ) )
 
-  af.spectra <- as.matrix( na.omit( af.spectra ) )
+  af.spectra <- as.matrix( stats::na.omit( af.spectra ) )
 
   # save as CSV
   if ( is.null( title ) )
@@ -100,7 +98,7 @@ get.af.spectra <- function(
   if ( is.null( table.dir ) )
     table.dir <- asp$table.spectra.dir
 
-  write.csv( af.spectra, file = file.path( table.dir, af.file.name ) )
+  utils::write.csv( af.spectra, file = file.path( table.dir, af.file.name ) )
 
   if ( figures ) {
     if ( verbose ) message( "Plotting spectra" )

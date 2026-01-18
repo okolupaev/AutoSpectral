@@ -6,9 +6,7 @@
 #' This function identifies and processes the universal negative
 #' control for a given sample, including scatter matching and plotting.
 #'
-#' @importFrom stats quantile median mad
 #' @importFrom sp point.in.polygon Polygon Polygons SpatialPolygons
-#' @importFrom grDevices contourLines
 #' @importFrom tripack tri.mesh convex.hull
 #'
 #' @param clean.expr.data List containing cleaned expression data.
@@ -38,17 +36,19 @@
 #' @return A data frame containing the selected positive and scatter-matched
 #' negative events.
 
-get.universal.negative <- function( clean.expr.data, samp,
-                                    universal.negatives,
-                                    scatter.param,
-                                    peak.channels, downsample,
-                                    negative.n, positive.n,
-                                    spectral.channel, asp,
-                                    control.type,
-                                    scatter.match = TRUE,
-                                    intermediate.figures = FALSE,
-                                    main.figures = TRUE,
-                                    verbose = TRUE ) {
+get.universal.negative <- function(
+    clean.expr.data, samp,
+    universal.negatives,
+    scatter.param,
+    peak.channels, downsample,
+    negative.n, positive.n,
+    spectral.channel, asp,
+    control.type,
+    scatter.match = TRUE,
+    intermediate.figures = FALSE,
+    main.figures = TRUE,
+    verbose = TRUE
+  ) {
 
   if ( verbose )
     message( paste0( "\033[34m", "Getting universal negative for: ", samp, "\033[0m" ) )
@@ -66,7 +66,7 @@ get.universal.negative <- function( clean.expr.data, samp,
   else
     threshold <- asp$positivity.threshold
 
-  positivity.threshold <- quantile( neg.peak.channel, threshold )
+  positivity.threshold <- stats::quantile( neg.peak.channel, threshold )
   pos.above.threshold <- pos.peak.channel[ pos.peak.channel > positivity.threshold ]
 
   # warn if few events in positive

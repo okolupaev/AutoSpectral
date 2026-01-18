@@ -2,17 +2,20 @@ pandoc: 3.6.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  articles/Aurora_example: Aurora_example.html
-  articles/Cleaning: Cleaning.html
-  articles/Control_File_example: Control_File_example.html
-  articles/Development: Development.html
-  articles/Full_AutoSpectral_Workflow: Full_AutoSpectral_Workflow.html
-  articles/Gating: Gating.html
-  articles/Per_Cell_Optimization: Per_Cell_Optimization.html
-  articles/Plotting: Plotting.html
-  articles/Reload_AutoSpectral: Reload_AutoSpectral.html
-  articles/Single_Cell_AutoFluorescence: Single_Cell_AutoFluorescence.html
-last_built: 2025-12-23T13:44Z
+  articles/01_Full_AutoSpectral_Workflow: 01_Full_AutoSpectral_Workflow.html
+  articles/02_Control_File_example: 02_Control_File_example.html
+  articles/03_Aurora_example: 03_Aurora_example.html
+  articles/04_Gating: 04_Gating.html
+  articles/05_Cleaning: 05_Cleaning.html
+  articles/06_Single_Cell_AutoFluorescence: 06_Single_Cell_AutoFluorescence.html
+  articles/07_Per_Cell_Optimization: 07_Per_Cell_Optimization.html
+  articles/08_Reload_AutoSpectral: 08_Reload_AutoSpectral.html
+  articles/09_Plotting: 09_Plotting.html
+  articles/10_Development: 10_Development.html
+  articles/11_Speed_It_Up: 11_Speed_It_Up.html
+  articles/12_Updates_And_Issues: 12_Updates_And_Issues.html
+  articles/13_ID7000_WLS_example: 13_ID7000_WLS_example.html
+last_built: 2026-01-18T14:12Z
 urls:
   reference: https://drcytometer.github.io/AutoSpectral/reference
   article: https://drcytometer.github.io/AutoSpectral/articles

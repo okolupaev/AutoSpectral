@@ -14,5 +14,11 @@ utils::globalVariables(
      "channel",
      "Laser",
      "Intensity",
-     "detector.n" )
+     "detector.n",
+     "x",
+     "y",
+     "label",
+     "num.label",
+     "median.spec"
+  )
 )

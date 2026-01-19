@@ -94,7 +94,7 @@ be working well.
 
 AutoSpectral is open source. If you are interested in contributing,
 please visit
-[Development](https://drcytometer.github.io/AutoSpectral/articles/Development.html)
+[Development](https://drcytometer.github.io/AutoSpectral/articles/10_Development.html)
 for suggestions of where help is needed most.
 
 You can install the development version of AutoSpectral from

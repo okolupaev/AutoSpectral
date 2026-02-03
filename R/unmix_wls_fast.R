@@ -24,7 +24,7 @@ unmix.wls.fast <- function( raw.data, spectra, weights = NULL ) {
   XtX <- Sw %*% t( spectra )
 
   # (S W Sᵀ)⁻¹ S W
-  unmixing.matrix <- solve(XtX, Sw  )
+  unmixing.matrix <- solve( XtX, Sw )
 
   raw.data %*% t( unmixing.matrix )
 

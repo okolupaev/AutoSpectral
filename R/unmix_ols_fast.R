@@ -20,9 +20,9 @@
 
 unmix.ols.fast <- function( raw.data, spectra, weights = NULL ) {
 
-  XtX <- spectra %*% t( spectra )
+  XtX <- tcrossprod( spectra )
 
-  unmixing.matrix <- solve( XtX, spectra )
+  unmixing.matrix <- solve.default( XtX, spectra )
 
   raw.data %*% t( unmixing.matrix )
 

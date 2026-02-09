@@ -62,7 +62,6 @@ get.fluorophore.spectra <- function(
 
   # extract fluophore spectra using original "dirty" data
   if ( !use.clean.expr ) {
-
     message(
       paste0( "\033[34m",
               "Using original `dirty` expression data to get spectra",
@@ -107,7 +106,7 @@ get.fluorophore.spectra <- function(
         }
       }
 
-      # normalize fluor.spectra.coef
+      # normalize fluor.spectra.coef (L-infinity)
       fluor.spectra.coef <- fluor.spectra.coef / max( fluor.spectra.coef )
 
       fluor.spectra.coef
@@ -115,10 +114,10 @@ get.fluorophore.spectra <- function(
     } )
 
     marker.spectra <- do.call( rbind, marker.spectra )
-    rownames( marker.spectra ) <- fluorophore.samples
+    rownames( marker.spectra ) <- make.unique( fluorophore.samples )
 
   } else {
-    # extract fluophore spectra using "cleaned" data
+    # extract fluorophore spectra using "cleaned" data
     message(
       paste0( "\033[34m",
               "Using cleaned expression data to get spectra",
@@ -164,7 +163,7 @@ get.fluorophore.spectra <- function(
         }
       }
 
-      # normalize fluor.spectra.coef
+      # normalize fluor.spectra.coef (L-infinity)
       fluor.spectra.coef <- fluor.spectra.coef / max( fluor.spectra.coef )
 
       fluor.spectra.coef
@@ -172,7 +171,7 @@ get.fluorophore.spectra <- function(
     } )
 
     marker.spectra <- do.call( rbind, marker.spectra )
-    rownames( marker.spectra ) <- fluorophore.samples
+    rownames( marker.spectra ) <- make.unique( fluorophore.samples )
   }
 
   # plot spectra
@@ -222,7 +221,7 @@ get.fluorophore.spectra <- function(
       figure.height = asp$figure.similarity.height
     )
 
-    # calculate unmixing matrix using singular value decomposition
+    # calculate OLS unmixing matrix using singular value decomposition
     sv <- svd( t( marker.spectra ) )
     unmixing.matrix <- sv$v %*% ( t( sv$u ) / sv$d )
     colnames( unmixing.matrix ) <- colnames( marker.spectra )

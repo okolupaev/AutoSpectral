@@ -28,13 +28,12 @@
 #' the variation in spectra. Up to `n.cells` cells will be selected as positive
 #' events in the peak channel for each fluorophore, above the 99.5th percentile
 #' level in the unstained sample.
-#' @param som.dim Numeric, default `7`. Number of x and y dimensions to use in
+#' @param som.dim Numeric, default `10`. Number of x and y dimensions to use in
 #' the SOM for clustering the spectral variation. The number of spectra returned
-#' for each fluorophore will increase with the quadratic of `som.dim`, so for 7,
-#' you will get up to 49 variants. Increasing the SOM dimensions further does
-#' not help. Somewhere between 4 and 7 appears to be sufficient, but with the
-#' pruning of variants implemented in `unmix.autospectral()` in v1.0.0, this is
-#' less important.
+#' for each fluorophore will increase with the quadratic of `som.dim`, so for 10,
+#' you will get up to 100 variants. Somewhere between 4 and 7 appears to be
+#' sufficient, but with the pruning of variants implemented in
+#' `unmix.autospectral()` in v1.0.0, this is less important.
 #' @param figures Logical, controls whether the variation in spectra for each
 #' fluorophore is plotted in `output.dir`. Default is `TRUE`.
 #' @param output.dir File path to whether the figures and .rds data file will be
@@ -58,7 +57,7 @@ get.spectral.variants <- function(
     control.dir, control.def.file,
     asp, spectra, af.spectra,
     n.cells = 2000,
-    som.dim = 7,
+    som.dim = 10,
     figures = TRUE,
     output.dir = NULL,
     parallel = FALSE,
@@ -84,30 +83,47 @@ get.spectral.variants <- function(
     )
   }
 
-  if ( is.null( af.spectra ) )
-    stop( "Multiple AF spectra must be provided." )
-  if ( nrow( af.spectra ) < 2 )
-    stop( "Multiple AF spectra must be provided." )
+  # check that af.spectra is a matrix and has rows
+  if ( is.null( af.spectra ) ) {
+    stop(
+      "Multiple AF in `af.spectra` must be provided in a matrix. See `?get.af.spectra`.",
+      call. = FALSE
+    )
+  }
+  if ( !is.matrix( af.spectra ) || nrow( af.spectra ) < 2 ) {
+    stop(
+      "Multiple AF in `af.spectra` must be provided in a matrix. See `?get.af.spectra`.",
+      call. = FALSE
+    )
+  }
 
   if ( is.null( output.dir ) )
     output.dir <- asp$variant.dir
   if ( !dir.exists( output.dir ) )
     dir.create( output.dir )
 
-  if ( som.dim > 12 )
-    warning( paste(
-      "Argument `som.dim` has been set to", som.dim, "which will produce",
-      som.dim^2, "spectral variants per fluorophore.", "\n",
-      "More spectral variants means slower unmixing and will also require",
-      "proprotionally more cells in `n.cells` as input."
-    ) )
+  if ( som.dim > 20 ) {
+    warning(
+      paste(
+        "Argument `som.dim` has been set to", som.dim, "which will produce",
+        som.dim^2, "spectral variants per fluorophore.", "\n",
+        "This requires proprotionally more cells in `n.cells` as input,",
+        "and may trigger failure."
+      ),
+      call. = FALSE
+    )
+  }
 
   fluorophores <- rownames( spectra )[ rownames( spectra ) != "AF" ]
   spectral.channel <- colnames( spectra )
 
   # read control file
-  if ( !file.exists( control.def.file ) )
-    stop( paste( "Unable to locate control.def.file:", control.def.file ) )
+  if ( !file.exists( control.def.file ) ) {
+    stop(
+      paste( "Unable to locate control.def.file:", control.def.file ),
+      call. = FALSE
+    )
+  }
 
   if ( verbose ) message( "\033[34mChecking control file for errors \033[0m" )
   check.control.file( control.dir, control.def.file, asp, strict = TRUE )
@@ -133,16 +149,19 @@ get.spectral.variants <- function(
   non.spectral.channel <- asp$non.spectral.channel
   non.spectral.channel <- paste0( non.spectral.channel, collapse = "|" )
 
-  flow.spectral.channel <- flow.set.channel[ !grepl( non.spectral.channel,
-                                                     flow.set.channel ) ]
+  flow.spectral.channel <- flow.set.channel[
+    !grepl( non.spectral.channel, flow.set.channel ) ]
   flow.scatter.parameter <- read.scatter.parameter( asp )
-  flow.scatter.and.channel.spectral <- c( asp$default.time.parameter,
-                                          flow.scatter.parameter,
-                                          flow.spectral.channel )
+  flow.scatter.and.channel.spectral <- c(
+    asp$default.time.parameter,
+    flow.scatter.parameter,
+    flow.spectral.channel
+  )
 
-  if ( grepl( "Discover", asp$cytometer ) )
-    flow.spectral.channel <- flow.spectral.channel[ grep( asp$spectral.channel,
-                                                          flow.spectral.channel ) ]
+  if ( grepl( "Discover", asp$cytometer ) ) {
+    flow.spectral.channel <- flow.spectral.channel[
+      grep( asp$spectral.channel, flow.spectral.channel ) ]
+  }
 
   # define list of samples
   flow.sample <- control.table$sample
@@ -159,8 +178,13 @@ get.spectral.variants <- function(
   names( control.type ) <- table.fluors
 
   # stop if "AF" sample is not present, fluorophore mismatch
-  if ( !( "AF" %in% table.fluors ) )
-    stop( "Unable to locate `AF` control in control file. An unstained cell control is required" )
+  if ( !( "AF" %in% table.fluors ) ) {
+    stop(
+      "Unable to locate `AF` control in control file. An unstained cell control is required.",
+      call. = FALSE
+    )
+
+  }
 
   if ( ! all( table.fluors %in% fluorophores ) ) {
     # check for 'Negative', 'AF', check for match again
@@ -169,9 +193,11 @@ get.spectral.variants <- function(
     matching.fluors <- fluor.to.match %in% fluorophores
 
     if ( !all( matching.fluors ) ) {
-      warning( "The fluorophores in your control file don't match those in your spectra." )
+      warning( "The fluorophores in your control file don't match those in your spectra.",
+               call. = FALSE )
       if ( !any( matching.fluors ) )
-        stop()
+        stop( "No matching fluorophores between provided `spectra` and the control file.",
+              call. = FALSE )
     }
     table.fluors <- fluor.to.match[ matching.fluors ]
   }
@@ -236,8 +262,12 @@ get.spectral.variants <- function(
 
   # Set up parallel processing
   if ( parallel ) {
-    internal.functions <- c( "get.fluor.variants", "cosine.similarity",
-                             "spectral.variant.plot", "unmix.ols" )
+    internal.functions <- c(
+      "get.fluor.variants",
+      "cosine.similarity",
+      "spectral.variant.plot",
+      "unmix.ols"
+    )
     exports <- c( "args.list", "table.fluors", internal.functions )
 
     result <- create.parallel.lapply(
@@ -278,6 +308,9 @@ get.spectral.variants <- function(
     }
   )
 
+  ### Check structure, ensure all fluorophores are accounted for ###
+  ### include dummy matrices if not present
+  #
   # drop any that are NULL due to error
   failed <- sapply( spectral.variants, is.null )
   failed.variants <- names( spectral.variants )[ failed ]
@@ -292,7 +325,10 @@ get.spectral.variants <- function(
     )
   }
 
-  if ( verbose ) message( paste0( "\033[33m", "Spectral variation computed!", "\033[0m" ) )
+  ### calculate deltas, delta.norms
+
+  if ( verbose )
+    message( paste0( "\033[33m", "Spectral variation computed!", "\033[0m" ) )
 
   variants <- list(
     thresholds = unmixed.thresholds,

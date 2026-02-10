@@ -181,10 +181,10 @@ unmix.fcs <- function(
     }
     # check for variants, warn if not provided
     if ( is.null( spectra.variants ) ) {
-      warning(
+      message(
         paste(
           "For AutoSpectral unmixing, providing fluorophore variation with",
-          "`spectra.variants` will give better results. See `?get.spectral.variants`."
+          "`spectra.variants` may give better results. See `?get.spectral.variants`."
         ),
         call. = FALSE
       )

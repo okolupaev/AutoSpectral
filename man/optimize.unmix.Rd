@@ -7,25 +7,17 @@
 optimize.unmix(
   raw.data,
   unmixed,
-  unmix.fun,
-  combined.spectra,
-  weights,
+  spectra,
   pos.thresholds,
-  af.idx,
-  af.spectra,
   optimize.fluors,
   variants,
   delta.list,
   delta.norms,
   fluorophores,
-  af.idx.in.spectra,
   asp,
   k = 10L,
-  cell.weighting = FALSE,
-  cell.weight.regularize = FALSE,
   nthreads = 1L,
-  parallel = TRUE,
-  refine.af = FALSE
+  parallel = TRUE
 )
 }
 \arguments{
@@ -33,17 +25,9 @@ optimize.unmix(
 
 \item{unmixed}{Numeric matrix (cells x fluors)}
 
-\item{unmix.fun}{Unmixing function (fast OLS or WLS)}
-
-\item{combined.spectra}{Numeric matrix (fluors x detectors)}
-
-\item{weights}{Numeric vector (n detectors)}
+\item{spectra}{Numeric matrix (fluors x detectors)}
 
 \item{pos.thresholds}{Numeric vector (n fluors)}
-
-\item{af.idx}{Integer vector (cells), AF spectrum assignments}
-
-\item{af.spectra}{Numeric matrix (n af_variants x n detectors)}
 
 \item{optimize.fluors}{Character vector of fluorophores present in variants}
 
@@ -55,15 +39,9 @@ optimize.unmix(
 
 \item{fluorophores}{Character vector of fluorophore names}
 
-\item{af.idx.in.spectra}{Integer, row index of AF in spectra}
-
 \item{asp}{The AutoSpectral parameter list.}
 
 \item{k}{Integer, number of variants to test}
-
-\item{cell.weighting}{Logical, use cell-specific weights}
-
-\item{cell.weight.regularize}{Logical, regularize cell weights}
 
 \item{nthreads}{Integer, number of threads}
 

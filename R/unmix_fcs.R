@@ -182,15 +182,17 @@ unmix.fcs <- function(
     # check for variants, warn if not provided
     if ( is.null( spectra.variants ) ) {
       warning(
-        "For AutoSpectral unmixing, providing fluorophore variation with `spectra.variants`
-        will give better results. See `?get.spectral.variants`.",
+        paste(
+          "For AutoSpectral unmixing, providing fluorophore variation with",
+          "`spectra.variants` will give better results. See `?get.spectral.variants`."
+        ),
         call. = FALSE
       )
     }
     # check for AutoSpectralRcpp
     if ( requireNamespace( "AutoSpectralRcpp", quietly = TRUE ) ) {
       # require 1.0.0 or higher if installed for compatibility
-      if ( utils::packageVersion( "AutoSpectralRcpp" ) < package_version( "0.1.5" ) ) { # change to 1.0.0
+      if ( utils::packageVersion( "AutoSpectralRcpp" ) < package_version( "1.0.0" ) ) {
         stop(
           "Package `AutoSpectralRcpp` >= 1.0.0 is required for this method.
           Please update the package.",

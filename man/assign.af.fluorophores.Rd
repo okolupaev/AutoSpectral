@@ -25,6 +25,6 @@ Projects the autofluorescence spectral variants into fluorophore unmixed
 space to determine which best fits each cell (event). A fast approximation for
 brute force sequential unmixing method in early versions of AutoSpectral.
 Provides essentially identical results to minimization of fluorophore signal
-(dist0 method), with minor differences being primarily due to the use of L2
-(squared) error, rather than L1 (absolute) error. Substantially faster.
+(dist0 method). Substantially faster. Use L1 (absolute value) minimization,
+which works better than the standard L2 (squared error).
 }

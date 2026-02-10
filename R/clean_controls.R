@@ -100,28 +100,28 @@ clean.controls <- function(
     lifecycle::deprecate_warn(
       "0.9.1",
       "clean.controls(time.clean)",
-      "will be deprecated going forward"
+      details = "will be deprecated going forward"
     )
   }
   if ( trim ) {
     lifecycle::deprecate_warn(
       "0.9.1",
       "clean.controls(trim)",
-      "will be deprecated going forward"
+      details = "will be deprecated going forward"
     )
   }
   if ( !is.null( trim.factor ) ) {
     lifecycle::deprecate_warn(
       "0.9.1",
       "clean.controls(trim.factor)",
-      "will be deprecated going forward"
+      details = "will be deprecated going forward"
     )
   }
   if ( scrub ) {
     lifecycle::deprecate_warn(
       "0.9.1",
       "clean.controls(scrub)",
-      "will be deprecated going forward"
+      details = "will be deprecated going forward"
     )
   }
 

@@ -38,8 +38,6 @@ assign.af.fluorophores <- function(
 
   # how much each AF variant looks like each fluorophore
   v.library <- unmixing.matrix %*% t( af.spectra )
-  # squared norms
-  v.norms.sq <- colSums( v.library^2 )
 
   # calculate the 'residual AF' (the part of AF fluorophores can't explain)
   r.library <- t( af.spectra ) - ( S %*% v.library )

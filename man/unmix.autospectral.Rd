@@ -54,8 +54,8 @@ will be tested and for \code{slow}, 10 variants will be tested. From AutoSpectra
 v1.0.0, \code{slow} is the default and is available in the pure R version.
 Installation of \code{AutoSpectralRcpp} is strongly encouraged for speed, though.}
 
-\item{parallel}{Logical, default is \code{FALSE}, in which case sequential processing
-will be used. The new parallel processing should always be faster.}
+\item{parallel}{Logical, default is \code{TRUE}. The new parallel processing
+should always be faster.}
 
 \item{threads}{Numeric, default is \code{NULL}, in which case \code{asp$worker.process.n}
 will be used. \code{asp$worker.process.n} is set by default to be one less than the

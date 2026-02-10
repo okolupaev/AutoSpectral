@@ -7,6 +7,7 @@
 #' fluorophore signatures at the single cell level.
 #'
 #' @importFrom lifecycle deprecate_warn
+#' @importFrom parallelly availableCores
 #'
 #' @param raw.data Expression data from raw fcs files. Cells in rows and
 #' detectors in columns. Columns should be fluorescent data only and must
@@ -34,8 +35,8 @@
 #' will be tested and for `slow`, 10 variants will be tested. From AutoSpectral
 #' v1.0.0, `slow` is the default and is available in the pure R version.
 #' Installation of `AutoSpectralRcpp` is strongly encouraged for speed, though.
-#' @param parallel Logical, default is `FALSE`, in which case sequential processing
-#' will be used. The new parallel processing should always be faster.
+#' @param parallel Logical, default is `TRUE`. The new parallel processing
+#' should always be faster.
 #' @param threads Numeric, default is `NULL`, in which case `asp$worker.process.n`
 #' will be used. `asp$worker.process.n` is set by default to be one less than the
 #' available cores on the machine. Multi-threading is only used if `parallel` is
@@ -148,7 +149,7 @@ unmix.autospectral <- function(
     )
   }
 
-  if ( verbose ) message( "Initializing unmix" )
+  if ( verbose ) message( "Unmixing autofluorescence" )
 
   # create empty matrix for collection of unmixed data
   unmixed <- matrix(
@@ -213,7 +214,8 @@ unmix.autospectral <- function(
   delta.norms <- spectra.variants$delta.norms
 
   if ( is.null( pos.thresholds ) )
-    stop( "Check that spectral variants have been calculated using `get.spectra.variants()`",
+    stop( "Check that spectral variants have been calculated using
+          `get.spectra.variants()`",
           call. = FALSE )
   if ( is.null( variants ) )
     stop( "Multiple fluorophore spectral variants must be provided.,

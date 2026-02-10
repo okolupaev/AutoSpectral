@@ -22,6 +22,12 @@ is most helpful for extracting autofluorescence in complex tissue samples, where
 AutoSpectral previously struggled to deal with the last few messy cells.
 - Speed in unmixing should be the biggest change, particularly if you run using
 `AutoSpectralRcpp`.
+- When extracting autofluorescence using `get.af.spectra()`, you will now get a
+set of plots showing you the unmixed data for the channels most affected by the
+autofluorescence ("worst channels"). The same channels will be plotted after a 
+single round of autofluorescence extraction per cell (as in AutoSpectral v0.9.2
+and earlier) as well as after the second round, using data from more difficult
+cells. To see this, run with `refine = TRUE`, which is the default setting now.
 - Autofluorescence is now assigned to each cell using a shortcut to "project"
 where the AF will impact on fluorophore or residual space. This is especially fast
 for residual-based assignment.

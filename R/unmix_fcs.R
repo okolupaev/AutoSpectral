@@ -206,12 +206,12 @@ unmix.fcs <- function(
       )
     }
 
-    # set number of variants to test (by `speed` if `k` is not provided)
+    # set number of variants to test (by `speed` if `n.variants` is not provided)
     if ( length( speed ) > 1 )
       speed <- speed[ 1 ]
 
-    if ( is.null( k ) || !is.numeric( k ) || length( k ) != 1 ) {
-      k <- switch(
+    if ( is.null( n.variants ) || !is.numeric( n.variants ) || length( n.variants ) != 1 ) {
+      n.variants <- switch(
         speed,
         "slow"   = 10L,
         "medium" = 3L,
@@ -221,7 +221,7 @@ unmix.fcs <- function(
             paste0(
               "Unrecognized input '",
               speed,
-              "' to `speed`. Defaulting to `slow` (k=10)."
+              "' to `speed`. Defaulting to `slow` (n.variants=10)."
             ),
             call. = FALSE
           )

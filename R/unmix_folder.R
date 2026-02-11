@@ -205,7 +205,7 @@ unmix.folder <- function(
       )
     }
 
-    # set number of variants to test (by `speed` if `k` is not provided)
+    # set number of variants to test (by `speed` if `n.variants` is not provided)
     if ( length( speed ) > 1 )
       speed <- speed[ 1 ]
 

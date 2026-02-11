@@ -88,11 +88,11 @@
 #' `TRUE`. If working on a computing cluster, try `parallelly::availableCores()`.
 #' @param verbose Logical, controls messaging. Default is `TRUE`. Set to `FALSE`
 #' to have it shut up.
-#' @param k Number of variants (and autofluorescence spectra) to test per cell.
-#' Allows explicit control over the number used, as opposed to `speed`, which
-#' selects from pre-defined choices. Providing a numeric value to `k` will
-#' override `speed`, allowing up to `k` (or the max available) variants to be
-#' tested. The default is `NULL`, in which case `k` will be ignored.
+#' @param n.variants Number of variants to test per cell. Allows explicit control
+#' over the number used, as opposed to `speed`, which selects from pre-defined
+#' choices. Providing a numeric value to `n.variants` will override `speed`,
+#' allowing up to `n.variants` (or the max available) variants to be tested. The
+#' default is `NULL`, in which case `n.variants` will be ignored.
 #' @param ... Ignored. Previously used for deprecated arguments such as
 #' `calculate.error`.
 #'
@@ -122,7 +122,7 @@ unmix.fcs <- function(
     parallel = TRUE,
     threads = NULL,
     verbose = TRUE,
-    k = NULL,
+    n.variants = NULL,
     ...
 ) {
 
@@ -325,13 +325,13 @@ unmix.fcs <- function(
             spectra = spectra,
             af.spectra = af.spectra,
             spectra.variants = spectra.variants,
-            weighted = weighted,
-            weights = weights,
             use.dist0 = use.dist0,
             verbose = verbose,
+            speed = speed,
             parallel = parallel,
             threads = threads,
-            speed = speed
+            n.variants = n.variants
+
           ),
           error = function( e ) {
             warning(
@@ -350,7 +350,7 @@ unmix.fcs <- function(
               speed = speed,
               parallel = parallel,
               threads = threads,
-              k = k
+              n.variants = n.variants
             )
           }
         )
@@ -367,7 +367,7 @@ unmix.fcs <- function(
           speed = speed,
           parallel = parallel,
           threads = threads,
-          k = k
+          n.variants = n.variants
         )
       }
     },

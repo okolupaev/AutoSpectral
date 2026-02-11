@@ -26,7 +26,7 @@ unmix.fcs(
   parallel = TRUE,
   threads = NULL,
   verbose = TRUE,
-  k = NULL,
+  n.variants = NULL,
   ...
 )
 }
@@ -131,11 +131,11 @@ available cores on the machine. Multi-threading is only used if \code{parallel} 
 \item{verbose}{Logical, controls messaging. Default is \code{TRUE}. Set to \code{FALSE}
 to have it shut up.}
 
-\item{k}{Number of variants (and autofluorescence spectra) to test per cell.
-Allows explicit control over the number used, as opposed to \code{speed}, which
-selects from pre-defined choices. Providing a numeric value to \code{k} will
-override \code{speed}, allowing up to \code{k} (or the max available) variants to be
-tested. The default is \code{NULL}, in which case \code{k} will be ignored.}
+\item{n.variants}{Number of variants to test per cell. Allows explicit control
+over the number used, as opposed to \code{speed}, which selects from pre-defined
+choices. Providing a numeric value to \code{n.variants} will override \code{speed},
+allowing up to \code{n.variants} (or the max available) variants to be tested. The
+default is \code{NULL}, in which case \code{n.variants} will be ignored.}
 
 \item{...}{Ignored. Previously used for deprecated arguments such as
 \code{calculate.error}.}

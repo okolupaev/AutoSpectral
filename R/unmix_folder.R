@@ -88,11 +88,11 @@
 #' `TRUE`. If working on a computing cluster, try `parallelly::availableCores()`.
 #' @param verbose Logical, controls messaging. Default is `TRUE`. Set to `FALSE`
 #' to have it shut up.
-#' @param k Number of variants (and autofluorescence spectra) to test per cell.
-#' Allows explicit control over the number used, as opposed to `speed`, which
-#' selects from pre-defined choices. Providing a numeric value to `k` will
-#' override `speed`, allowing up to `k` (or the max available) variants to be
-#' tested. The default is `NULL`, in which case `k` will be ignored.
+#' @param n.variants Number of variants to test per cell. Allows explicit control
+#' over the number used, as opposed to `speed`, which selects from pre-defined
+#' choices. Providing a numeric value to `n.variants` will override `speed`,
+#' allowing up to `n.variants` (or the max available) variants to be tested. The
+#' default is `NULL`, in which case `n.variants` will be ignored.
 #' @param ... Ignored. Previously used for deprecated arguments such as
 #' `calculate.error`.
 #'
@@ -122,7 +122,7 @@ unmix.folder <- function(
     parallel = FALSE,
     threads = NULL,
     verbose = TRUE,
-    k = NULL,
+    n.variants = NULL,
     ...
 ) {
 
@@ -209,8 +209,8 @@ unmix.folder <- function(
     if ( length( speed ) > 1 )
       speed <- speed[ 1 ]
 
-    if ( is.null( k ) || !is.numeric( k ) || length( k ) != 1 ) {
-      k <- switch(
+    if ( is.null( n.variants ) || !is.numeric( n.variants ) || length( n.variants ) != 1 ) {
+      n.variants <- switch(
         speed,
         "slow"   = 10L,
         "medium" = 3L,
@@ -220,7 +220,7 @@ unmix.folder <- function(
             paste0(
               "Unrecognized input '",
               speed,
-              "' to `speed`. Defaulting to `slow` (k=10)."
+              "' to `speed`. Defaulting to `slow` (n.variants=10)."
             ),
             call. = FALSE
           )
@@ -262,7 +262,8 @@ unmix.folder <- function(
     speed = speed,
     parallel = parallel,
     threads = threads,
-    verbose = verbose
+    verbose = verbose,
+    n.variants = n.variants
   )
 
   # Set up parallel processing

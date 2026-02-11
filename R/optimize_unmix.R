@@ -109,6 +109,11 @@ optimize.unmix <- function(
             delta.norm  <- delta.norms[[ fl ]]
 
             # score variants
+            # Note: here we score based on the L2 error (sum of the squared residual)
+            # Later, we evaluate changes based on the L1 error (sum of the absolute residual)
+            # This mismatch may be helpful in avoiding overfitting, but should be investigated further.
+            # Using the L2 error is closer to the optimization performed by least squares,
+            # but in all my testing, it performs a bit worse. This is not something I understand.
             joint.score <- as.numeric( delta.fl %*% t( resid ) ) * cell.unmixed[ , fl ]
             joint.score <- joint.score / delta.norm / sqrt( sum( resid^2 ) )
 

@@ -179,7 +179,7 @@ get.spectral.variants <- function(
   table.fluors <- control.table$fluorophore
   table.fluors <- table.fluors[ !is.na( table.fluors ) ]
   universal.negative <- control.table$universal.negative
-  universal.negative[ is.na( universal.negative ) ] <- FALSE
+  universal.negative[ is.na( universal.negative ) ] <- "FALSE"
   names( universal.negative ) <- table.fluors
   flow.channel <- control.table$channel
   names( flow.channel ) <- table.fluors
@@ -198,6 +198,7 @@ get.spectral.variants <- function(
 
   # check for data/spectra column matching
   spectra.cols <- colnames( spectra )
+  detector.n <- ncol( spectra )
 
   if ( !identical( spectral.channel, spectra.cols ) ) {
 
@@ -287,6 +288,7 @@ get.spectral.variants <- function(
     raw.thresholds = raw.thresholds,
     unmixed.thresholds = unmixed.thresholds,
     flow.channel = flow.channel,
+    detector.n = detector.n,
     refine = refine,
     problem.quantile = problem.quantile
   )
@@ -325,42 +327,49 @@ get.spectral.variants <- function(
   names( spectral.variants ) <- table.fluors
 
   # update with real variants where possible
-  tryCatch(
+  updated.variants <- tryCatch(
     expr = {
-      updated.variants <- lapply.function( table.fluors, function( f ) {
+      lapply.function( table.fluors, function( f ) {
         tryCatch(
           expr = {
-            do.call(
-              get.fluor.variants,
-              c( list( f ), args.list )
-            )
+            # check that channels are mapped
+            if (is.na(args.list$flow.channel[f])) {
+              stop(paste("No flow channel mapped for", f))
+            }
+
+            # get the variants
+            do.call( get.fluor.variants, c( list( f ), args.list ) )
           },
           error = function( e ) {
-            message( "Error for fluorophore ", f, ": ", conditionMessage( e ) )
-            NULL
+            # return a flagged list so post-processing knows it of errors
+            return( list( is.error = TRUE, msg = conditionMessage( e ) ) )
           }
         )
       } )
-      names( updated.variants ) <- table.fluors
-
-      # replace base spectra only if updated.variants[[f]] is not NULL
-      for ( f in table.fluors ) {
-        if ( !is.null( updated.variants[[ f ]] ) ) {
-          spectral.variants[[ f ]] <- updated.variants[[ f ]]
-        } else {
-          warning(
-            paste( "Calculation failed for:", f, "- using base spectrum as fallback." )
-          )
-        }
-      }
     },
     finally = {
-      if ( !is.null( result$cleanup ) )
+      # shut down clusters
+      if ( !is.null( result$cleanup ) ) {
         result$cleanup()
+      }
     }
   )
 
-  ### calculate deltas, delta.norms
+  # store actual variants into the fallback list where we got data
+  names( updated.variants ) <- table.fluors
+
+  for ( f in table.fluors ) {
+    res <- updated.variants[[ f ]]
+
+    if ( is.list( res ) && isTRUE( res$is.error ) ) {
+      warning( paste( "Calculation failed for:", f, "| Error:", res$msg ) )
+      # note: spectral.variants[[f]] remains the base spectrum (no update)
+    } else if ( !is.null( res ) ) {
+      spectral.variants[[ f ]] <- res
+    }
+  }
+
+  ### calculate deltas, delta.norms ###
 
   # calculate deltas for each fluorophore's variants
   delta.list <- lapply( names( spectral.variants ), function( fl ) {

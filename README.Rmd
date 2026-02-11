@@ -34,7 +34,8 @@ BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC", "FlowSOM"))
 
 # You'll need devtools or remotes to install from GitHub.
 # install.packages("devtools")
-devtools::install_github("DrCytometer/AutoSpectral@dev")
+# install.packages("remotes")
+remotes::install_github("DrCytometer/AutoSpectral@dev")
 ```
 
 
@@ -55,7 +56,7 @@ The central ideas are as follows:
 * Encode Roederer's Rules for controls as much as possible.
 * Deal with cellular autofluorescence interfering with identifying fluorophore signatures.
 * Autofluorescence is variable on a cell-to-cell basis, both in magnitude and in type. We can figure out, more or less, what this should be for each cell.
-* Fluorophore emissions are variable, and this variability manifests on the level of the cell. Again, we can sort of figure this out and deal with it.
+* Fluorophore emissions are variable, and this variability manifests on the level of the cell. Again, we can more or less figure this out and deal with it.
 
 At the moment, the following cytometers are supported:
 
@@ -92,7 +93,8 @@ BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC", "FlowSOM"))
 
 # You'll need devtools or remotes to install from GitHub.
 # install.packages("devtools")
-devtools::install_github("DrCytometer/AutoSpectral")
+# install.packages("remotes")
+remotes::install_github("DrCytometer/AutoSpectral")
 ```
 
 As of version 0.8.7, there is a Shiny helper tool to assist you in setting up your AutoSpectral control files. This is an interactive html app that opens in RStudio. Hopefully this makes things easier. It is new, so again, imperfect. To try it, visit [AutoSpectralHelper](https://github.com/DrCytometer/AutoSpectralHelper). If you update AutoSpectral, I recommend downloading a new version of the app to ensure compatibility.
@@ -113,7 +115,7 @@ AutoSpectral is open source. If you are interested in contributing, please visit
 You can install the development version of AutoSpectral from [GitHub](https://github.com/) with:
 
 ``` {r, eval = FALSE}
-devtools::install_github("DrCytometer/AutoSpectral@dev")
+remotes::install_github("DrCytometer/AutoSpectral@dev")
 ```
 
 
@@ -121,6 +123,8 @@ devtools::install_github("DrCytometer/AutoSpectral@dev")
 ## Bug fixes and known issues
 
 AutoSpectral is pretty complex and newly released, so there will be bugs. Sorry. Thanks to all of you providing feedback. Please submit any and all issues either using the Issues page or via email at colibri-cytometry at gmail.
+
+All of the functions available in AutoSpectral can be viewed [here](https://drcytometer.github.io/AutoSpectral/reference/index.html).
 
 To submit a bug report, go to [Issues](https://github.com/DrCytometer/AutoSpectral/issues).
 

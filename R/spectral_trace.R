@@ -182,7 +182,7 @@ spectral.trace <- function(
 
   if ( save ) {
     ggsave(
-      file.path( plot.dir, sprintf( "%s.jpg", title )),
+      file.path( plot.dir, sprintf( "%s.jpg", title ) ),
       spectra.plot,
       width = plot.width,
       height = plot.height,

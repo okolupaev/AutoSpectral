@@ -16,7 +16,7 @@ gate.define.plot(
   scatter.and.channel.label,
   asp,
   color.palette = "rainbow",
-  max.points = 1e+05
+  max.points = 50000
 )
 ```
 
@@ -65,7 +65,7 @@ gate.define.plot(
 
 - max.points:
 
-  Number of points to plot (speeds up plotting). Default is `1e5`.
+  Number of points to plot (speeds up plotting). Default is `5e4`.
 
 ## Value
 

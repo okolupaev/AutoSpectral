@@ -68,7 +68,7 @@ identification of cells with similar AF profiles.</p>
 <span>  table.dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Autofluorescence spectra"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  refine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  refine <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  problem.quantile <span class="op">=</span> <span class="fl">0.99</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -121,9 +121,16 @@ Default is <code>NULL</code>, which inherits from <code>asp$table.af.dir</code>.
 
 
 <dt id="arg-refine">refine<a class="anchor" aria-label="anchor" href="#arg-refine"></a></dt>
-<dd><p>Logical, default is <code>TRUE</code>. Controls whether to perform a second
+<dd><p>Logical, default is <code>FALSE</code>. Controls whether to perform a second
 round of autofluorescence measurement on "problem cells", which are those
-with the highest spillover, as defined by <code>problem.quantile</code>.</p></dd>
+with the highest spillover, as defined by <code>problem.quantile</code>. When <code>FALSE</code>,
+behavior is identical to versions of AutoSpectral prior to 1.0.0. If you are
+working with samples containing complex autofluorescence, e.g., tissues or
+tumors, using <code>refine=TRUE</code> will improve autofluorescence extraction in the
+unmixing at the cost of an increase in unmixing time. The increase in time
+will depend on the method used to assign autofluorescence spectra per cell
+(residual based assignment is very fast) and whether you have installed
+<code>AutoSpectralRcpp</code>, which will speed up assignment and unmixing.</p></dd>
 
 
 <dt id="arg-problem-quantile">problem.quantile<a class="anchor" aria-label="anchor" href="#arg-problem-quantile"></a></dt>

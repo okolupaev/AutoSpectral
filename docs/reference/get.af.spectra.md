@@ -17,7 +17,7 @@ get.af.spectra(
   table.dir = NULL,
   title = "Autofluorescence spectra",
   verbose = TRUE,
-  refine = TRUE,
+  refine = FALSE,
   problem.quantile = 0.99
 )
 ```
@@ -69,9 +69,17 @@ get.af.spectra(
 
 - refine:
 
-  Logical, default is `TRUE`. Controls whether to perform a second round
-  of autofluorescence measurement on "problem cells", which are those
-  with the highest spillover, as defined by `problem.quantile`.
+  Logical, default is `FALSE`. Controls whether to perform a second
+  round of autofluorescence measurement on "problem cells", which are
+  those with the highest spillover, as defined by `problem.quantile`.
+  When `FALSE`, behavior is identical to versions of AutoSpectral prior
+  to 1.0.0. If you are working with samples containing complex
+  autofluorescence, e.g., tissues or tumors, using `refine=TRUE` will
+  improve autofluorescence extraction in the unmixing at the cost of an
+  increase in unmixing time. The increase in time will depend on the
+  method used to assign autofluorescence spectra per cell (residual
+  based assignment is very fast) and whether you have installed
+  `AutoSpectralRcpp`, which will speed up assignment and unmixing.
 
 - problem.quantile:
 

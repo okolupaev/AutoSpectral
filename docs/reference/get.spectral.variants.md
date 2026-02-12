@@ -25,7 +25,7 @@ get.spectral.variants(
   parallel = FALSE,
   verbose = TRUE,
   threads = NULL,
-  refine = TRUE,
+  refine = FALSE,
   problem.quantile = 0.95,
   ...
 )
@@ -104,9 +104,14 @@ get.spectral.variants(
 
 - refine:
 
-  Logical, default is `TRUE`. Controls whether to perform a second round
-  of variation measurement on "problem cells", which are those with the
-  highest spillover, as defined by `problem.quantile`.
+  Logical, default is `FALSE`. Controls whether to perform a second
+  round of variation measurement on "problem cells", which are those
+  with the highest spillover, as defined by `problem.quantile`. When
+  `FALSE`, behavior is identical to versions of AutoSpectral prior to
+  1.0.0. Setting to `TRUE` may help reduce spillover spread and unmixing
+  errors. Using `refine=TRUE` does not impact subsequent unmixing
+  calculation time in any significant way, unlike the same setting in
+  [`get.af.spectra()`](https://drcytometer.github.io/AutoSpectral/reference/get.af.spectra.md).
 
 - problem.quantile:
 

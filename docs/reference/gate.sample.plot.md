@@ -15,7 +15,7 @@ gate.sample.plot(
   control.type,
   asp,
   color.palette = "rainbow",
-  max.points = 1e+05
+  max.points = 50000
 )
 ```
 
@@ -60,7 +60,7 @@ gate.sample.plot(
 
 - max.points:
 
-  Number of points to plot (speeds up plotting). Default is `1e5`.
+  Number of points to plot (speeds up plotting). Default is `5e4`.
 
 ## Value
 

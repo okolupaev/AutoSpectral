@@ -130,7 +130,7 @@ get.fluor.variants(
   total signal in the fluorophore (non-AF) channels after per-cell AF
   extraction will be used to determine additional autofluorescence
   spectra, using a second round of clustering and modulation of the
-  previously selected autofluroescence spectra. A value of `0.95` means
+  previously selected autofluorescence spectra. A value of `0.95` means
   the top 5% of cells, those farthest from zero, will be selected for
   further investigation.
 

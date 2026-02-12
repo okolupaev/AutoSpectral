@@ -112,10 +112,10 @@ Benchmarks for "C3 Lung_GFP_003_Samples.fcs", again on the 8-core laptop, using 
 * `unmix.fcs()` perCell AF extraction v1.0.0: 14sec (45s in R without C++)
 * `unmix.fcs()` perCell fluorophore optimization "fast" v0.8.7: 9min
 * `unmix.fcs()` perCell fluorophore optimization "fast" v0.9.0: <2min
-* `unmix.fcs()` perCell fluorophore optimization "fast" v1.0.0: 45s
+* `unmix.fcs()` perCell fluorophore optimization "fast" v1.0.0: <2min (note: performance here should now be comparable to the previous "slow")
 * `unmix.fcs()` perCell fluorophore optimization "slow" v0.8.7: 62min
 * `unmix.fcs()` perCell fluorophore optimization "slow" v0.9.0: 19min
-* `unmix.fcs()` perCell fluorophore optimization "slow" v1.0.0: 2.3min
+* `unmix.fcs()` perCell fluorophore optimization "slow" v1.0.0: 11min
 * `unmix.folder()` WLS or OLS, 6 files, v0.8.7: 67sec sequential, interrupted parallel
 * `unmix.folder()` WLS or OLS, 6 files, v0.9.0: 62sec sequential, 31sec parallel
 

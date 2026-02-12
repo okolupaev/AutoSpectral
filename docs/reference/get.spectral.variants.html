@@ -83,7 +83,7 @@ the <code>readRDS</code> function) rather than re-running this process.</p>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  refine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  refine <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  problem.quantile <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -161,9 +161,13 @@ available cores on the machine. Multi-threading is only used if <code>parallel</
 
 
 <dt id="arg-refine">refine<a class="anchor" aria-label="anchor" href="#arg-refine"></a></dt>
-<dd><p>Logical, default is <code>TRUE</code>. Controls whether to perform a second
+<dd><p>Logical, default is <code>FALSE</code>. Controls whether to perform a second
 round of variation measurement on "problem cells", which are those with the
-highest spillover, as defined by <code>problem.quantile</code>.</p></dd>
+highest spillover, as defined by <code>problem.quantile</code>. When <code>FALSE</code>,
+behavior is identical to versions of AutoSpectral prior to 1.0.0. Setting to
+<code>TRUE</code> may help reduce spillover spread and unmixing errors. Using <code>refine=TRUE</code>
+does not impact subsequent unmixing calculation time in any significant way,
+unlike the same setting in <code><a href="get.af.spectra.html">get.af.spectra()</a></code>.</p></dd>
 
 
 <dt id="arg-problem-quantile">problem.quantile<a class="anchor" aria-label="anchor" href="#arg-problem-quantile"></a></dt>

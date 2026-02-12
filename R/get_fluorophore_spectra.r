@@ -183,58 +183,68 @@ get.fluorophore.spectra <- function(
     if ( !is.null( af.spectra ) )
       fluorophore.spectra.plot <- rbind( fluorophore.spectra.plot, af.spectra )
 
-    spectral.trace(
-      spectral.matrix = fluorophore.spectra.plot,
-      asp = asp,
-      title = paste( title, asp$spectra.file.name, sep = "_" ),
-      plot.dir = asp$figure.spectra.dir,
-      split.lasers = TRUE,
-      figure.spectra.line.size = asp$figure.spectra.line.size,
-      figure.spectra.point.size = asp$figure.spectra.point.size
+    # error handling so plotting never causes the function to abort
+    tryCatch(
+      expr = {
+        spectral.trace(
+          spectral.matrix = fluorophore.spectra.plot,
+          asp = asp,
+          title = paste( title, asp$spectra.file.name, sep = "_" ),
+          plot.dir = asp$figure.spectra.dir,
+          split.lasers = TRUE,
+          figure.spectra.line.size = asp$figure.spectra.line.size,
+          figure.spectra.point.size = asp$figure.spectra.point.size
+        )
+
+        spectral.heatmap(
+          fluorophore.spectra.plot,
+          title = paste( title, asp$spectra.file.name, sep = "_" ),
+          plot.dir = asp$figure.spectra.dir
+        )
+
+        cosine.similarity.plot(
+          fluorophore.spectra.plot,
+          filename = asp$similarity.heatmap.file.name,
+          title,
+          output.dir = asp$figure.similarity.heatmap.dir,
+          figure.width = asp$figure.similarity.width,
+          figure.height = asp$figure.similarity.height
+        )
+
+        hotspot.matrix <- calculate.hotspot.matrix( marker.spectra )
+
+        create.heatmap(
+          hotspot.matrix,
+          title = paste( title, "Hotspot_Matrix", sep = "_" ),
+          legend.label = expression( "Hotspot Matrix"^"TM" ),
+          triangular = TRUE,
+          plot.dir = asp$figure.similarity.heatmap.dir,
+          color.palette = "inferno",
+          figure.width = asp$figure.similarity.width,
+          figure.height = asp$figure.similarity.height
+        )
+
+        # calculate OLS unmixing matrix using singular value decomposition
+        sv <- svd( t( marker.spectra ) )
+        unmixing.matrix <- sv$v %*% ( t( sv$u ) / sv$d )
+        colnames( unmixing.matrix ) <- colnames( marker.spectra )
+        rownames( unmixing.matrix ) <- rownames( marker.spectra )
+
+        # plot the unmixing matrix as a heatmap
+        spectral.heatmap(
+          spectra = unmixing.matrix,
+          title = paste( title, "unmixing_matrix", sep = "_" ),
+          plot.dir = asp$figure.spectra.dir,
+          legend.label = "Coefficients",
+          color.palette = "mako"
+        )
+      },
+      error = function( e ) {
+        message( "Error in plotting fluorophore spectra: ", e$message )
+        return( NULL )
+      }
     )
 
-    spectral.heatmap(
-      fluorophore.spectra.plot,
-      title = paste( title, asp$spectra.file.name, sep = "_" ),
-      plot.dir = asp$figure.spectra.dir
-    )
-
-    cosine.similarity.plot(
-      fluorophore.spectra.plot,
-      filename = asp$similarity.heatmap.file.name,
-      title,
-      output.dir = asp$figure.similarity.heatmap.dir,
-      figure.width = asp$figure.similarity.width,
-      figure.height = asp$figure.similarity.height
-    )
-
-    hotspot.matrix <- calculate.hotspot.matrix( marker.spectra )
-
-    create.heatmap(
-      hotspot.matrix,
-      title = paste( title, "Hotspot_Matrix", sep = "_" ),
-      legend.label = expression( "Hotspot Matrix"^"TM" ),
-      triangular = TRUE,
-      plot.dir = asp$figure.similarity.heatmap.dir,
-      color.palette = "inferno",
-      figure.width = asp$figure.similarity.width,
-      figure.height = asp$figure.similarity.height
-    )
-
-    # calculate OLS unmixing matrix using singular value decomposition
-    sv <- svd( t( marker.spectra ) )
-    unmixing.matrix <- sv$v %*% ( t( sv$u ) / sv$d )
-    colnames( unmixing.matrix ) <- colnames( marker.spectra )
-    rownames( unmixing.matrix ) <- rownames( marker.spectra )
-
-    # plot the unmixing matrix as a heatmap
-    spectral.heatmap(
-      spectra = unmixing.matrix,
-      title = paste( title, "unmixing_matrix", sep = "_" ),
-      plot.dir = asp$figure.spectra.dir,
-      legend.label = "Coefficients",
-      color.palette = "mako"
-    )
   }
 
   # save the spectra as a CSV file
@@ -243,8 +253,7 @@ get.fluorophore.spectra <- function(
       marker.spectra,
       file = file.path(
         asp$table.spectra.dir,
-        paste0( title, "_", asp$spectra.file.name, ".csv"
-        )
+        paste0( title, "_", asp$spectra.file.name, ".csv" )
       )
     )
   }

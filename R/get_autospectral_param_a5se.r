@@ -56,6 +56,9 @@ get.autospectral.param.a5se <- function( autosp.param )
 
   autosp.param$ribbon.breaks <- c( -1e2, 0, 1e2, 1e3, 1e4, 1e5 )
 
+  # lower the similarity threshold since we have fewer detectors
+  autosp.param$sim.threshold <- 0.975
+
   return( autosp.param )
 
 }

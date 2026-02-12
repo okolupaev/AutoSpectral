@@ -191,6 +191,8 @@ get.autospectral.param.minimal <- function()
       ### spectral variants parameters
       variant.dir = "./figure_spectral_variants",
       variant.filename = "Spectral_variants.rds",
+      # threshold to exclude dissimilar spectral variants
+      sim.threshold = 0.985,
 
       rlm.downsample.n = 25000,
       ### directory parameters

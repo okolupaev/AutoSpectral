@@ -295,7 +295,7 @@ from the unstained lung sample, and then call `unmix.folder` on the
 folder containing your lung (and only lung) samples. Repeat for each
 type of autofluorescence sample. Read more about how the per-cell
 autofluorescence extraction works in the
-[GitHub](https://drcytometer.github.io/AutoSpectral/articles/06_Single_Cell_AutoFluorescence.html)
+[GitHub](https://drcytometer.github.io/AutoSpectral/articles/08_Single_Cell_AutoFluorescence.html)
 or
 [Colibri](https://www.colibri-cytometry.com/post/autospectral-single-cell-autofluorescence)
 article.
@@ -339,7 +339,7 @@ variation in the spectrum for each fluorophore. For the unmixing, we’ll
 supply the `af.spectra` and the `spectra.variants`, calling
 `AutoSpectral` unmixing. Read more about how the per-cell fluorophore
 optimization works in the
-[GitHub](https://drcytometer.github.io/AutoSpectral/articles/07_Per_Cell_Optimization.html)
+[GitHub](https://drcytometer.github.io/AutoSpectral/articles/09_Per_Cell_Optimization.html)
 or
 [Colibri](https://www.colibri-cytometry.com/post/autospectral-per-cell-fluorophore-optimization)
 article.

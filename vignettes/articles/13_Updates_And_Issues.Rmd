@@ -1,7 +1,6 @@
 ---
-title: "12 Updates and Issues"
+title: "13 Updates and Issues"
 output: html_document
-date: "2026-01-18"
 ---
 
 ```{r setup, include=FALSE}

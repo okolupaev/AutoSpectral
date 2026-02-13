@@ -15,8 +15,8 @@ gate.define.plot(
   gate.population,
   scatter.and.channel.label,
   asp,
-  color.palette = "rainbow",
-  max.points = 50000
+  color.palette = "plasma",
+  max.points = 1e+05
 )
 ```
 
@@ -52,8 +52,7 @@ gate.define.plot(
 
 - asp:
 
-  The AutoSpectral parameter list. Prepare using
-  `get.autospectral.param`
+  The AutoSpectral parameter list.
 
 - color.palette:
 
@@ -65,7 +64,7 @@ gate.define.plot(
 
 - max.points:
 
-  Number of points to plot (speeds up plotting). Default is `5e4`.
+  Number of points to plot. Default is `1e5`.
 
 ## Value
 

@@ -14,7 +14,7 @@ gate.sample.plot(
   scatter.and.channel.label,
   control.type,
   asp,
-  color.palette = "rainbow",
+  color.palette = "mako",
   max.points = 50000
 )
 ```

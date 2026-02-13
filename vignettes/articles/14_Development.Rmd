@@ -1,5 +1,5 @@
 ---
-title: "10 Development"
+title: "14 Development"
 output: html_document
 date: "2026-02-11"
 ---
@@ -17,6 +17,7 @@ If you would like to contribute to AutoSpectral, these are key areas I have iden
   + A new parallel backend using `parLapply` on Windows or `mclapply` on Mac/Linux has been implemented. This should gracefully fall back to sequential `lapply` processing if it runs into any problems when being set-up.
   + Parallelization of `unmix.autospectral()` in base R can be ~30% faster for per-cell unmixing if we use `foreach` with `doParallel`, but this introduces at least three new dependencies and is a minor improvement compared with running via Rcpp.
   + I am struggling to produce fast adaptations of AutoSpectral for MacOS because I do not have access to MacOS. Suggestions would be appreciated for better implementation of the `mclapply` parallelization for Mac. Perhaps more importantly, AutoSpectralRcpp relies on OpenMP, and OpenMP is difficult to set up and use on Mac, in my understanding. If it would help, I could produce a version of AutoSpectralRcpp that just relies on `RcppArmadillo` without OpenMP.
+  + Memory management. This is a problem for unmixing large files, I believe. 
 
 * Code clean-up for `define.flow.control`.
   + This was the first part of the code I wrote, since it is required for everything downstream. It is, consequently, probably the worst. 
@@ -49,8 +50,8 @@ If you would like to contribute to AutoSpectral, these are key areas I have iden
 
 * Integration of Poisson IRLS
   + The Poisson IRLS in `AutoSpectralRcpp` is now working considerably better and faster. This may allow for integration of the Poisson optimization after identification of cellular autofluorescence and fluorophore signatures.
-  + For this to be practical, per-cell fluorophore optimization needs to be faster.
-  + This does not appear to provide any additional benefit.
+  + For this to be practical, per-cell fluorophore optimization needs to be faster (it is now).
+  + This does not appear to provide any additional benefit, so it is no longer being actively pursued.
 
 
 To install the `dev` branch:

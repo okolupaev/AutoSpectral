@@ -15,7 +15,7 @@ gate.af.identify.plot(
   gate.bound.density,
   asp,
   color.palette = "rainbow",
-  max.points = 50000
+  max.points = 1e+05
 )
 ```
 
@@ -52,7 +52,7 @@ gate.af.identify.plot(
 
 - max.points:
 
-  Number of points to plot (speeds up plotting). Default is `5e4`.
+  Number of points to plot (speeds up plotting). Default is `1e5`.
 
 ## Value
 

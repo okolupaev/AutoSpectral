@@ -9,29 +9,6 @@
 
 **Version 1.0.0**
 
-Welcome to the Development branch of AutoSpectral.
-
-This will always be a work-in-progress, and will not necessarily be
-stable at any given point. At the moment, most of the changes taking
-place relate to speeding things up or fixing any reported bugs.
-
-To install the development version, run the code below in your
-R/RStudio. This will overwrite any prior installation of AutoSpectral.
-To restore the stable version of AutoSpectral, simply re-run the
-`install_github()` command without the @dev bit.
-
-``` r
-# Install Bioconductor packages
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC", "FlowSOM"))
-
-# You'll need devtools or remotes to install from GitHub.
-# install.packages("devtools")
-# install.packages("remotes")
-remotes::install_github("DrCytometer/AutoSpectral@dev")
-```
-
 ## Introduction
 
 AutoSpectral is AutoSpill updated for the spectral flow era.
@@ -127,9 +104,10 @@ What AutoSpectral cannot do:
 
 Version 1.0.0 is intended to greatly speed up the process of unmixing.
 This is done by pre-screening the variation in autofluorescence and
-fluorophore variation for each cell, identifying likely “best”
-candidates rather than using a brute force approach. If you are using
-AutoSpectralRcpp, you will need to update that for compatibility.
+fluorophores for each cell, identifying likely “best” candidates rather
+than using a brute force approach. If you are using
+[AutoSpectralRcpp](https://github.com/DrCytometer/AutoSpectralRcpp), you
+will need to update that for compatibility.
 
 To install the latest, hopefully stable version, install using
 `devtools` or `remotes`. You will need to install the Bioconductor
@@ -161,7 +139,7 @@ To install a specific release, e.g., a previous one, use the version
 number:
 
 ``` r
-remotes::install_github("DrCytometer/AutoSpectral@v0.8.7")
+remotes::install_github("DrCytometer/AutoSpectral@v0.9.0")
 ```
 
 ### Dev branch
@@ -174,13 +152,6 @@ AutoSpectral is open source. If you are interested in contributing,
 please visit
 [Development](https://drcytometer.github.io/AutoSpectral/articles/14_Development.html)
 for suggestions of where help is needed most.
-
-You can install the development version of AutoSpectral from
-[GitHub](https://github.com/) with:
-
-``` r
-remotes::install_github("DrCytometer/AutoSpectral@dev")
-```
 
 ## Bug fixes and known issues
 

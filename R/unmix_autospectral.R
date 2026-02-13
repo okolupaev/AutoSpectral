@@ -192,8 +192,7 @@ unmix.autospectral <- function(
     }
   }
 
-
-  # if we don't have spectral variants and aren't refining AF, stop here
+  # if we don't have spectral variants, stop here
   if ( is.null( spectra.variants ) ) return( unmixed )
 
 

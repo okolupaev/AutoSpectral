@@ -9,7 +9,6 @@
 #' @importFrom ggplot2 theme_bw theme element_line geom_path after_stat
 #' @importFrom ggplot2 element_text element_rect margin ggsave
 #' @importFrom ggplot2 scale_fill_viridis_c scale_fill_gradientn stat_density_2d
-#' @importFrom viridis viridis_pal
 #' @importFrom scattermore geom_scattermore
 #' @importFrom ragg agg_jpeg
 #'

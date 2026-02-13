@@ -12,7 +12,6 @@
 #' @importFrom ggplot2 scale_fill_viridis_c scale_fill_gradientn stat_density_2d
 #' @importFrom ggplot2 geom_text geom_point geom_path
 #' @importFrom scattermore geom_scattermore
-#' @importFrom viridis viridis_pal
 #' @importFrom ragg agg_jpeg
 #'
 #' @param samp Sample identifier.

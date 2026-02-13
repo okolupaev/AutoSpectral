@@ -40,7 +40,6 @@ Imports:
     lifecycle,
     parallelly,
     RhpcBLASctl,
-    viridis,
     ragg
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

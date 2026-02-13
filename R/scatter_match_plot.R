@@ -10,7 +10,6 @@
 #' @importFrom ggplot2 scale_fill_gradientn scale_fill_viridis_c stat_density_2d
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous theme_bw
 #' @importFrom ggplot2 theme element_rect element_text margin ggsave
-#' @importFrom viridis viridis_pal
 #' @importFrom scattermore geom_scattermore
 #' @importFrom ragg agg_jpeg
 #'

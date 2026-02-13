@@ -7,7 +7,6 @@
 #' @importFrom ggplot2 margin element_line element_text element_rect element_blank
 #' @importFrom ggplot2 scale_fill_viridis_c scale_fill_gradientn stat_density_2d
 #' @importFrom flowWorkspace flowjo_biexp
-#' @importFrom viridis viridis_pal
 #' @importFrom scattermore geom_scattermore
 #' @importFrom ragg agg_jpeg
 #'
@@ -173,78 +172,28 @@ create.biplot <- function(
     widthBasis = y.width.basis,
     inverse = FALSE )
 
-  ## transform and color the data by density
   # convert to data frame for plotting
   plot.data <- data.frame(
     x = plot.data[ , x.dim ],
     y = plot.data[ , y.dim ] )
 
-  # color options
-  viridis.colors <- c(
-    "magma", "inferno", "plasma", "viridis",
-    "cividis", "rocket", "mako", "turbo"
-  )
-
-  if ( color.palette %in% viridis.colors ) {
-    # use viridis palettes
-    pal.func <- grDevices::colorRampPalette(
-      viridis::viridis_pal( option = color.palette )( 256 ) )
-  } else {
-    # use rainbow palette
-    pal.func <- grDevices::colorRampPalette( asp$density.palette.base.color )
-  }
-
   # apply transformation
   plot.data$x.trans <- biexp.transform.x( plot.data$x )
   plot.data$y.trans <- biexp.transform.y( plot.data$y )
 
-  # quick density-based color scheme
-  plot.data$dens <- grDevices::densCols(
-    plot.data$x.trans, plot.data$y.trans,
-    colramp = pal.func,
-    nbin = 256
-  )
-
-  # set up the base plot
-  biplot <- ggplot( plot.data, aes( x.trans, y.trans ) )
-
-  # add color scheme
-  if ( nrow( plot.data ) < 50000 ) {
-    # for low event counts, use the slow but accurate ggplot function
-    biplot <- biplot +
-      geom_scattermore(
-        pointsize = asp$figure.gate.point.size,
-        color = "black",
-        alpha = 1,
-        na.rm = TRUE
-      ) +
-      stat_density_2d(
-        aes( fill = after_stat( level ) ),
-        geom = "polygon",
-        na.rm = TRUE
-      )
-
-    # add fill layer for color palette
-    if ( color.palette %in% viridis.colors ) {
-      biplot <- biplot + scale_fill_viridis_c( option = color.palette )
-    } else {
-      biplot <- biplot +
-        scale_fill_gradientn( colors = asp$density.palette.base.color )
-    }
-
-  } else {
-    # if we have plenty of points, use the faster color mapping
-    biplot <- biplot +
-      geom_scattermore(
-        aes( color = I( dens ) ),
-        pointsize = asp$figure.gate.point.size,
-        alpha = 1,
-        na.rm = TRUE
-      )
-  }
-
-  # add everything else (gates, labels)
-  biplot <- biplot +
+  # set up the plot
+  biplot <- ggplot( plot.data, aes( x.trans, y.trans ) ) +
+    geom_scattermore(
+      pointsize = asp$figure.gate.point.size,
+      color = "black",
+      alpha = 1,
+      na.rm = TRUE
+    ) +
+    stat_density_2d(
+      aes( fill = after_stat( level ) ),
+      geom = "polygon",
+      na.rm = TRUE
+    ) +
     scale_x_continuous(
       name = x.lab,
       breaks = biexp.transform.x( x.breaks ),
@@ -270,6 +219,20 @@ create.biplot <- function(
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank()
     )
+
+  # color options
+  viridis.colors <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+
+  # add fill layer for color palette
+  if ( color.palette %in% viridis.colors ) {
+    biplot <- biplot + scale_fill_viridis_c( option = color.palette )
+  } else {
+    biplot <- biplot +
+      scale_fill_gradientn( colors = asp$density.palette.base.color )
+  }
 
   # save or return the plot
   if ( save )

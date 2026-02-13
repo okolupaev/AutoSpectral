@@ -46,7 +46,8 @@ in handling between samples and controls.
 More to the point, AutoSpectral is intended to make working with messy
 cell-based controls as easy as compensation beads. This should give you
 better accuracy and precision in your spectral definition and thus in
-your unmixing.
+your unmixing. AutoSpectral does not negate the requirement for good
+controls or good panel design. It will work better with better controls.
 
 AutoSpectral aims to provide reproducible unmixing, meaning that anyone
 should be able to obtain reliably good (probably better) unmixing from
@@ -56,7 +57,7 @@ part, which is slow and not always so scientific.
 Plus, you can extract each cell’s individual autofluorescent background
 in a manner specific to that cell, producing better unmixing with less
 spread. Per-cell fluorescence spectral optimization can reduce unmixing
-errors.
+errors in some cases.
 
 The central ideas are as follows:
 
@@ -77,10 +78,18 @@ At the moment, the following cytometers are supported:
 - Sony ID7000 (“id7000”)
 - BD FACSDiscoverS8 (“s8”)
 - BD FACSDiscoverA8 (“a8”)
-- BD FACSymphony A5 SE (“a5se”)
+- BD FACSymphony A5 SE (“a5se”) (probably still some work to be done for
+  this one)
 - Agilent NovoCyte Opteon (“opteon”)
 - Beckman Coulter CytoFLEX mosaic (“mosaic”)
 - ThermoFisher Attune Xenith (“xenith”)
+
+AutoSpectral will probably not solve all your unmixing issues; hopefully
+it will help. Here are some other unmixing tools that may also help:
+
+- [flowUnmix](https://github.com/hally166/flowUnmix)
+- [PanelBuilder](https://github.com/exaexa/panelbuilder)
+- [Ozette Resolve](https://www.ozette.com/)
 
 ## Installation
 
@@ -154,6 +163,11 @@ AutoSpectral is pretty complex and newly released, so there will be
 bugs. Sorry. Thanks to all of you providing feedback. Please submit any
 and all issues either using the Issues page or via email at
 colibri-cytometry at gmail.
+
+At this point, many of the issues arising are specific to either the
+data set or how it is being defined in the “control file”.
+Troubleshooting these often requires a copy of the raw data, at least a
+partial set of the unstained and single-stained controls.
 
 All of the functions available in AutoSpectral can be viewed
 [here](https://drcytometer.github.io/AutoSpectral/reference/index.html).

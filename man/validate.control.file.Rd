@@ -4,7 +4,13 @@
 \alias{validate.control.file}
 \title{Validate Control File}
 \usage{
-validate.control.file(control.dir, control.def.file, asp)
+validate.control.file(
+  control.dir,
+  control.def.file,
+  asp,
+  min.event.warning,
+  min.event.error
+)
 }
 \arguments{
 \item{control.dir}{File path to the single-stained control FCS files.}
@@ -13,6 +19,12 @@ validate.control.file(control.dir, control.def.file, asp)
 fluorophores they represent, marker names, peak channels, and gating requirements.}
 
 \item{asp}{The AutoSpectral parameter list.}
+
+\item{min.event.warning}{The number of events in the entire FCS file that will
+trigger a warning if not met.}
+
+\item{min.event.error}{The number of events in the entire FCS file that will
+trigger an error if not met.}
 }
 \value{
 A dataframe of errors and warnings intended to help the user fix

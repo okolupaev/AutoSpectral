@@ -12,11 +12,21 @@
 #' @param control.def.file CSV file defining the single-color control file names,
 #' fluorophores they represent, marker names, peak channels, and gating requirements.
 #' @param asp The AutoSpectral parameter list.
+#' @param min.event.warning The number of events in the entire FCS file that will
+#' trigger a warning if not met.
+#' @param min.event.error The number of events in the entire FCS file that will
+#' trigger an error if not met.
 #'
 #' @return A dataframe of errors and warnings intended to help the user fix
 #' problems with the `control.def.file`.
 
-validate.control.file <- function( control.dir, control.def.file, asp ) {
+validate.control.file <- function(
+    control.dir,
+    control.def.file,
+    asp,
+    min.event.warning,
+    min.event.error
+  ) {
 
   issues <- list()
 
@@ -66,7 +76,7 @@ validate.control.file <- function( control.dir, control.def.file, asp ) {
   )
 
   missing.cols <- setdiff( required.cols, colnames( ct ) )
-  if ( length( missing.cols ) > 0) {
+  if ( length( missing.cols ) > 0 ) {
     issues[[ length( issues ) + 1 ]] <-
       .new_issue( "error", "missing_columns",
                   column = paste( missing.cols, collapse = ", " ),
@@ -218,7 +228,7 @@ validate.control.file <- function( control.dir, control.def.file, asp ) {
 
   un <- stats::na.omit( unique( ct$universal.negative ) )
   absent <- setdiff( un, ct$filename )
-  if ( length( absent ) > 0) {
+  if ( length( absent ) > 0 ) {
     issues[[ length( issues ) + 1 ]] <-
       .new_issue( "error", "universal_negative_missing",
                   filename = absent,
@@ -331,14 +341,14 @@ validate.control.file <- function( control.dir, control.def.file, asp ) {
   if ( any( ev < 5000 ) ) {
     issues[[ length( issues ) + 1 ]] <-
       .new_issue( "warning", "low_event_count",
-                  filename = ct$filename[ ev < 5000 ],
+                  filename = ct$filename[ ev < min.event.warning ],
                   message = "Event count < 5000" )
   }
 
-  if (any(ev < 1000)) {
+  if ( any( ev < 1000 ) ) {
     issues[[ length( issues ) + 1 ]] <-
       .new_issue( "error", "very_low_event_count",
-                  filename = ct$filename[ ev < 1000 ],
+                  filename = ct$filename[ ev < min.event.error ],
                   message = "Event count < 1000" )
   }
 

@@ -4,7 +4,14 @@
 \alias{check.control.file}
 \title{Check Control File}
 \usage{
-check.control.file(control.dir, control.def.file, asp, strict = FALSE)
+check.control.file(
+  control.dir,
+  control.def.file,
+  asp,
+  strict = FALSE,
+  min.event.warning = 5000,
+  min.event.error = 1000
+)
 }
 \arguments{
 \item{control.dir}{File path to the single-stained control FCS files.}
@@ -17,6 +24,12 @@ using \code{get.autospectral.param}.}
 
 \item{strict}{Logical. Controls whether the function triggers a break or
 continues and outputs a list of errors. Default is \code{FALSE}.}
+
+\item{min.event.warning}{The number of events in the entire FCS file that will
+trigger a warning if not met. Default is \code{5000}.}
+
+\item{min.event.error}{The number of events in the entire FCS file that will
+trigger an error if not met. Default is \code{1000}.}
 }
 \value{
 A dataframe of errors and warnings intended to help the user fix

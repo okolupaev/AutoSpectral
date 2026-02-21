@@ -112,8 +112,6 @@ unmix.autospectral <- function(
     }
   }
 
-  if ( verbose ) message( "Assigning optimal AF spectrum to each cell" )
-
   # set up for per-cell AF extraction
   fluorophores <- rownames( spectra )
   fluorophore.n <- nrow( spectra )
@@ -130,6 +128,16 @@ unmix.autospectral <- function(
   combined.spectra[ 1:fluorophore.n, ] <- spectra
   af.only <- is.null( spectra.variants )
   af.n <- nrow( af.spectra )
+
+  # tell the user what's been selected
+  if ( verbose ) {
+    if ( !af.only )
+      message( "Per-cell autofluorescence extraction and fluorophore optimization will be performed." )
+    else
+      message( "Only per-cell autofluorescence extraction will be performed." )
+  }
+
+  if ( verbose ) message( "Assigning optimal AF spectrum to each cell" )
 
   # score the AF spectra per cell to determine the initial best "AF Index"
   if ( use.dist0 ) {

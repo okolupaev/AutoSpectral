@@ -1,0 +1,18 @@
+```{r}
+
+# Download the packages from Bioconductor
+BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC", "FlowSOM"))
+
+# Attach packages
+library(flowWorkspace,flowCore,PeacoQC,FlowSOM)
+
+# Install "remotes" package for getting github packages, and install Autospectral
+install.packages("remotes")
+remotes::install_github("DrCytometer/AutoSpectral")
+
+# Attach "Autospectral"
+library(AutoSpectral)
+
+#Confirm that all the packages are attached
+sessionInfo()
+```
